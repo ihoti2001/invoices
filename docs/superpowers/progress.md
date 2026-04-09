@@ -1,6 +1,6 @@
 # Implementation Progress
 
-## Status: Phase 1 COMPLETE ✓ — Ready to execute Phase 2
+## Status: Phase 2 COMPLETE ✓ — Full Supabase integration done
 
 ## What's been done (planning)
 - Full codebase analysis via jCodemunch (repo: local/invoices app-e64fdfe4)
@@ -42,17 +42,17 @@
 14. Update Settings.tsx (payment details fields)
 15. Delete src/store/useStore.ts, final verification
 
-## Phase 2 task list (after Phase 1 complete) ← START HERE
-1. Create Supabase tables + RLS (SQL — USER ACTION NEEDED)
-2. Install @supabase/supabase-js, create .env.local (USER ACTION NEEDED for credentials)
-3. Create src/lib/supabase.ts
-4. Create src/components/LoginPage.tsx
-5. Update src/main.tsx (auth session gate)
-6. Update AppContext.tsx (async Supabase queries)
-7. Update domain hooks (expose loading state)
-8. Update Settings.tsx + InvoiceView.tsx (Supabase settings table)
-9. Add logout to Sidebar.tsx
-10. Final end-to-end verification
+## Phase 2 task list — ALL COMPLETE (2026-04-09) ✓
+1. Create Supabase tables + RLS (SQL) ✓
+2. Install @supabase/supabase-js, create .env.local ✓
+3. Create src/lib/supabase.ts ✓
+4. Create src/components/LoginPage.tsx ✓
+5. Update src/main.tsx (auth session gate) ✓
+6. Update AppContext.tsx (async Supabase queries) ✓
+7. Update domain hooks (expose loading state) ✓
+8. Update Settings.tsx + InvoiceView.tsx (Supabase settings table) ✓
+9. Add logout to Sidebar.tsx ✓
+10. Final end-to-end verification ✓
 
 ## Key file interfaces (locked — don't change)
 - InvoiceForm props: { invoiceId?: string; onClose: () => void }
