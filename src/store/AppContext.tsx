@@ -2,7 +2,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase } from "@/lib/supabase";
 import { Client, Invoice, Bill, ActivityLog } from "@/types";
-import { supabase } from "@/lib/supabase";
 
 export interface AppStore {
   loading: boolean;
@@ -144,7 +143,14 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
       .insert({ user_id: userId, name: client.name, email: client.email, phone: client.phone, address: client.address, city: client.city, country: client.country, company: client.company })
       .select()
       .single();
-    if (error) throw error;
+    if (error) {
+      const res = (error as unknown as { context?: Response }).context;
+      if (res) {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(body.error ?? error.message);
+      }
+      throw error;
+    }
     const newClient = toClient(data);
     setClients((prev) => [...prev, newClient]);
     await addActivityEntry(`New client added: ${client.company || client.name}`, "client");
@@ -161,7 +167,14 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
       ...(updates.country !== undefined && { country: updates.country }),
       ...(updates.company !== undefined && { company: updates.company }),
     }).eq("id", id);
-    if (error) throw error;
+    if (error) {
+      const res = (error as unknown as { context?: Response }).context;
+      if (res) {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(body.error ?? error.message);
+      }
+      throw error;
+    }
     setClients((prev) => prev.map((c) => (c.id === id ? { ...c, ...updates } : c)));
     await addActivityEntry(`Client updated: ${updates.company || updates.name || id}`, "client");
   };
@@ -169,7 +182,14 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
   const deleteClient = async (id: string): Promise<void> => {
     const client = clients.find((c) => c.id === id);
     const { error } = await supabase.from("clients").delete().eq("id", id);
-    if (error) throw error;
+    if (error) {
+      const res = (error as unknown as { context?: Response }).context;
+      if (res) {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(body.error ?? error.message);
+      }
+      throw error;
+    }
     setClients((prev) => prev.filter((c) => c.id !== id));
     if (client) await addActivityEntry(`Client deleted: ${client.company || client.name}`, "client");
   };
@@ -237,7 +257,14 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
     if (updates.paidAt !== undefined) dbUpdates.paid_at = updates.paidAt;
 
     const { error } = await supabase.from("invoices").update(dbUpdates).eq("id", id);
-    if (error) throw error;
+    if (error) {
+      const res = (error as unknown as { context?: Response }).context;
+      if (res) {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(body.error ?? error.message);
+      }
+      throw error;
+    }
 
     if (updates.lineItems) {
       await supabase.from("invoice_line_items").delete().eq("invoice_id", id);
@@ -251,16 +278,30 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
   const deleteInvoice = async (id: string): Promise<void> => {
     const inv = invoices.find((i) => i.id === id);
     const { error } = await supabase.from("invoices").delete().eq("id", id);
-    if (error) throw error;
+    if (error) {
+      const res = (error as unknown as { context?: Response }).context;
+      if (res) {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(body.error ?? error.message);
+      }
+      throw error;
+    }
     setInvoices((prev) => prev.filter((i) => i.id !== id));
     if (inv) await addActivityEntry(`Invoice ${inv.invoiceNumber} deleted`, "invoice");
   };
 
   const sendInvoice = async (id: string, recipientEmail: string): Promise<void> => {
-    const { error } = await supabase.functions.invoke("send-invoice", {
+    const { data: _d, error } = await supabase.functions.invoke("send-invoice", {
       body: { invoiceId: id, recipientEmail },
     });
-    if (error) throw error;
+    if (error) {
+      const res = (error as unknown as { context?: Response }).context;
+      if (res) {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(body.error ?? error.message);
+      }
+      throw error;
+    }
     await updateInvoice(id, { status: "sent" });
     const inv = invoices.find((i) => i.id === id);
     if (inv) await addActivityEntry(`Invoice ${inv.invoiceNumber} sent to ${recipientEmail}`, "invoice");
@@ -288,7 +329,14 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
       .insert({ user_id: userId, bill_number: bill.billNumber, vendor: bill.vendor, category: bill.category, status: bill.status, issue_date: bill.issueDate, due_date: bill.dueDate, amount: bill.amount, description: bill.description })
       .select()
       .single();
-    if (error) throw error;
+    if (error) {
+      const res = (error as unknown as { context?: Response }).context;
+      if (res) {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(body.error ?? error.message);
+      }
+      throw error;
+    }
     const newBill = toBill(data);
     setBills((prev) => [...prev, newBill]);
     await addActivityEntry(`Bill ${bill.billNumber} added from ${bill.vendor}`, "bill");
@@ -306,14 +354,28 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
     if (updates.amount !== undefined) dbUpdates.amount = updates.amount;
     if (updates.description !== undefined) dbUpdates.description = updates.description;
     const { error } = await supabase.from("bills").update(dbUpdates).eq("id", id);
-    if (error) throw error;
+    if (error) {
+      const res = (error as unknown as { context?: Response }).context;
+      if (res) {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(body.error ?? error.message);
+      }
+      throw error;
+    }
     setBills((prev) => prev.map((b) => (b.id === id ? { ...b, ...updates } : b)));
   };
 
   const deleteBill = async (id: string): Promise<void> => {
     const bill = bills.find((b) => b.id === id);
     const { error } = await supabase.from("bills").delete().eq("id", id);
-    if (error) throw error;
+    if (error) {
+      const res = (error as unknown as { context?: Response }).context;
+      if (res) {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(body.error ?? error.message);
+      }
+      throw error;
+    }
     setBills((prev) => prev.filter((b) => b.id !== id));
     if (bill) await addActivityEntry(`Bill ${bill.billNumber} from ${bill.vendor} deleted`, "bill");
   };
