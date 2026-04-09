@@ -1,1 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Hanken+Grotesk:ital,wght@0,300..700;1,300..700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-display: "Bricolage Grotesque", sans-serif;
+  --font-sans: "Hanken Grotesk", sans-serif;
+}
+
+@layer base {
+  html {
+    font-family: "Hanken Grotesk", sans-serif;
+    background-color: oklch(96.5% 0.009 210);
+    color: oklch(15% 0.013 210);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}

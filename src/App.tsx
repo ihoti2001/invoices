@@ -32,7 +32,7 @@ function App() {
     : undefined;
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen" style={{ backgroundColor: 'oklch(96.5% 0.009 210)' }}>
       <Sidebar currentPage={page} onNavigate={(p) => setPage(p as Page)} />
 
       <main className="flex-1 overflow-auto">

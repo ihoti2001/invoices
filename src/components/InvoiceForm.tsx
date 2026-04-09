@@ -82,11 +82,11 @@ export default function InvoiceForm({ invoiceId, onClose }: InvoiceFormProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Invoice Number</label>
-              <input value={invoiceNumber} onChange={(e) => setInvoiceNumber(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <input value={invoiceNumber} onChange={(e) => setInvoiceNumber(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Client</label>
-              <select value={clientId} onChange={(e) => setClientId(e.target.value)} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <select value={clientId} onChange={(e) => setClientId(e.target.value)} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]">
                 <option value="">Select client…</option>
                 {clients.map((c) => (
                   <option key={c.id} value={c.id}>{c.company || c.name}</option>
@@ -95,27 +95,27 @@ export default function InvoiceForm({ invoiceId, onClose }: InvoiceFormProps) {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Issue Date</label>
-              <input type="date" value={issueDate} onChange={(e) => setIssueDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <input type="date" value={issueDate} onChange={(e) => setIssueDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
-              <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]" />
             </div>
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="block text-sm font-medium text-gray-700">Line Items</label>
-              <button type="button" onClick={addLineItem} className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800">
+              <button type="button" onClick={addLineItem} className="flex items-center gap-1 text-xs text-[oklch(42%_0.11_200)] hover:text-[oklch(32%_0.11_200)]">
                 <Plus className="w-3 h-3" /> Add Item
               </button>
             </div>
             <div className="space-y-2">
               {lineItems.map((li) => (
                 <div key={li.id} className="grid grid-cols-12 gap-2 items-center">
-                  <input placeholder="Description" value={li.description} onChange={(e) => updateLineItem(li.id, "description", e.target.value)} className="col-span-5 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                  <input type="number" placeholder="Qty" value={li.quantity} onChange={(e) => updateLineItem(li.id, "quantity", Number(e.target.value))} className="col-span-2 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                  <input type="number" placeholder="Rate" value={li.rate} onChange={(e) => updateLineItem(li.id, "rate", Number(e.target.value))} className="col-span-2 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                  <input placeholder="Description" value={li.description} onChange={(e) => updateLineItem(li.id, "description", e.target.value)} className="col-span-5 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]" />
+                  <input type="number" placeholder="Qty" value={li.quantity} onChange={(e) => updateLineItem(li.id, "quantity", Number(e.target.value))} className="col-span-2 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]" />
+                  <input type="number" placeholder="Rate" value={li.rate} onChange={(e) => updateLineItem(li.id, "rate", Number(e.target.value))} className="col-span-2 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]" />
                   <div className="col-span-2 text-sm text-gray-700 text-right">${li.amount.toFixed(2)}</div>
                   <button type="button" onClick={() => removeLineItem(li.id)} className="col-span-1 text-gray-400 hover:text-red-500 flex justify-center">
                     <Trash2 className="w-4 h-4" />
@@ -141,14 +141,14 @@ export default function InvoiceForm({ invoiceId, onClose }: InvoiceFormProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]" />
           </div>
 
           <div className="flex justify-end gap-3 pt-2 border-t border-gray-200">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
               Cancel
             </button>
-            <button type="submit" className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+            <button type="submit" className="px-4 py-2 text-sm bg-[oklch(42%_0.11_200)] text-white rounded-lg hover:bg-[oklch(36%_0.11_200)]">
               {invoice ? "Update Invoice" : "Create Invoice"}
             </button>
           </div>

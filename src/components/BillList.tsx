@@ -110,7 +110,7 @@ export default function BillList() {
         <h1 className="text-2xl font-bold text-gray-800">Bills</h1>
         <button
           onClick={openAdd}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-semibold text-sm transition-colors shadow"
+          className="flex items-center gap-2 bg-[oklch(42%_0.11_200)] hover:bg-[oklch(36%_0.11_200)] text-white px-4 py-2.5 rounded-lg font-semibold text-sm transition-colors shadow"
         >
           <Plus className="w-4 h-4" /> New Bill
         </button>
@@ -125,13 +125,13 @@ export default function BillList() {
             placeholder="Search bills..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
           />
         </div>
         <select
           value={statusFilter}
           onChange={e => setStatusFilter(e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)] bg-white"
         >
           <option value="all">All Status</option>
           <option value="pending">Pending</option>
@@ -236,7 +236,7 @@ export default function BillList() {
                   <input
                     value={form.billNumber}
                     onChange={e => setForm(f => ({ ...f, billNumber: e.target.value }))}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
                     required
                   />
                 </div>
@@ -245,7 +245,7 @@ export default function BillList() {
                   <select
                     value={form.status}
                     onChange={e => setForm(f => ({ ...f, status: e.target.value as Bill['status'] }))}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)] bg-white"
                   >
                     <option value="pending">Pending</option>
                     <option value="paid">Paid</option>
@@ -258,7 +258,7 @@ export default function BillList() {
                 <input
                   value={form.vendor}
                   onChange={e => setForm(f => ({ ...f, vendor: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
                   required
                 />
               </div>
@@ -268,7 +268,7 @@ export default function BillList() {
                   <select
                     value={form.category}
                     onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)] bg-white"
                   >
                     {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
@@ -281,7 +281,7 @@ export default function BillList() {
                     step={0.01}
                     value={form.amount}
                     onChange={e => setForm(f => ({ ...f, amount: parseFloat(e.target.value) || 0 }))}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
                     required
                   />
                 </div>
@@ -293,7 +293,7 @@ export default function BillList() {
                     type="date"
                     value={form.issueDate}
                     onChange={e => setForm(f => ({ ...f, issueDate: e.target.value }))}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
                     required
                   />
                 </div>
@@ -303,7 +303,7 @@ export default function BillList() {
                     type="date"
                     value={form.dueDate}
                     onChange={e => setForm(f => ({ ...f, dueDate: e.target.value }))}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
                     required
                   />
                 </div>
@@ -314,7 +314,7 @@ export default function BillList() {
                   value={form.description}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                   rows={2}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)] resize-none"
                 />
               </div>
               <div className="flex justify-end gap-3 pt-2">
@@ -327,7 +327,7 @@ export default function BillList() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
+                  className="px-5 py-2 bg-[oklch(42%_0.11_200)] hover:bg-[oklch(36%_0.11_200)] text-white rounded-lg text-sm font-semibold transition-colors"
                 >
                   {editingBill ? 'Update Bill' : 'Add Bill'}
                 </button>

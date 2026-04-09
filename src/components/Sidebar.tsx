@@ -5,8 +5,6 @@ import {
   Users,
   Settings,
   BarChart3,
-  HelpCircle,
-  ChevronDown,
   LogOut,
 } from 'lucide-react';
 import { supabase } from "@/lib/supabase";
@@ -20,71 +18,101 @@ interface SidebarProps {
 
 const navItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'reports', label: 'Reports', icon: BarChart3 },
-  { id: 'invoices', label: 'Invoices', icon: FileText },
-  { id: 'bills', label: 'Bills', icon: Receipt },
-  { id: 'clients', label: 'Clients', icon: Users },
-  { id: 'settings', label: 'Business Settings', icon: Settings },
+  { id: 'reports',   label: 'Reports',   icon: BarChart3 },
+  { id: 'invoices',  label: 'Invoices',  icon: FileText },
+  { id: 'bills',     label: 'Bills',     icon: Receipt },
+  { id: 'clients',   label: 'Clients',   icon: Users },
+  { id: 'settings',  label: 'Settings',  icon: Settings },
 ] as const;
+
+const SB_BG          = 'oklch(17% 0.026 215)';
+const SB_ACTIVE_BG   = 'oklch(99% 0.004 210)';
+const SB_ACTIVE_TEXT = 'oklch(17% 0.026 215)';
+const SB_MUTED       = 'oklch(52% 0.018 210)';
+const SB_HOVER_BG    = 'oklch(24% 0.022 215)';
+const SB_HOVER_TEXT  = 'oklch(82% 0.012 210)';
+const SB_DIVIDER     = 'oklch(27% 0.022 215)';
+const SB_ACCENT      = 'oklch(52% 0.055 200)';
 
 export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
   return (
-    <aside className="w-56 min-h-screen bg-[#1a2236] flex flex-col text-white flex-shrink-0">
-      {/* Top user area */}
-      <div className="px-4 py-4 border-b border-white/10">
-        <div className="flex items-center gap-2 cursor-pointer hover:bg-white/5 rounded-lg px-2 py-2 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-[#2e4a7a] flex items-center justify-center font-bold text-sm text-white flex-shrink-0">
-            BZ
-          </div>
-          <span className="text-sm font-semibold text-white/90 truncate">BizFlow Pro</span>
-          <ChevronDown className="w-4 h-4 text-white/50 ml-auto flex-shrink-0" />
-        </div>
-      </div>
-
-      {/* Avatar */}
-      <div className="flex justify-center pt-6 pb-4">
-        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-xl text-white shadow-lg">
-          BZ
-        </div>
-      </div>
-
-      {/* Upgrade button */}
-      <div className="px-4 pb-4">
-        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 rounded-lg transition-colors">
-          Upgrade
-        </button>
+    <aside
+      style={{ background: SB_BG, fontFamily: '"Hanken Grotesk", sans-serif' }}
+      className="w-52 min-h-screen flex flex-col flex-shrink-0"
+    >
+      {/* Wordmark */}
+      <div className="px-5 pt-7 pb-8">
+        <p
+          style={{ color: 'oklch(94% 0.006 210)', fontFamily: '"Bricolage Grotesque", sans-serif' }}
+          className="text-sm font-semibold leading-snug"
+        >
+          Ilir Hoti
+        </p>
+        <p
+          style={{ color: SB_ACCENT, letterSpacing: '0.12em', fontSize: '10px' }}
+          className="uppercase font-medium mt-0.5"
+        >
+          Web Design
+        </p>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-2 space-y-0.5">
-        {navItems.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => onNavigate(id as Page)}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-              currentPage === id
-                ? 'bg-white/10 text-white'
-                : 'text-white/60 hover:bg-white/5 hover:text-white/90'
-            }`}
-          >
-            <Icon className="w-4 h-4 flex-shrink-0" />
-            {label}
-          </button>
-        ))}
+      <nav className="flex-1 px-3 space-y-0.5">
+        {navItems.map(({ id, label, icon: Icon }) => {
+          const active = currentPage === id;
+          return (
+            <button
+              key={id}
+              onClick={() => onNavigate(id as Page)}
+              style={{
+                background: active ? SB_ACTIVE_BG : 'transparent',
+                color: active ? SB_ACTIVE_TEXT : SB_MUTED,
+              }}
+              onMouseEnter={e => {
+                if (!active) {
+                  (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
+                  (e.currentTarget as HTMLElement).style.color = SB_HOVER_TEXT;
+                }
+              }}
+              onMouseLeave={e => {
+                if (!active) {
+                  (e.currentTarget as HTMLElement).style.background = 'transparent';
+                  (e.currentTarget as HTMLElement).style.color = SB_MUTED;
+                }
+              }}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors"
+            >
+              <Icon
+                className="flex-shrink-0"
+                style={{ width: 15, height: 15 }}
+                strokeWidth={active ? 2 : 1.5}
+              />
+              {label}
+            </button>
+          );
+        })}
       </nav>
 
       {/* Bottom */}
-      <div className="px-2 pb-4">
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/50 hover:bg-white/5 hover:text-white/80 transition-colors">
-          <HelpCircle className="w-4 h-4" />
-          Help Center
-        </button>
+      <div
+        className="px-3 pb-5 pt-3"
+        style={{ borderTop: `1px solid ${SB_DIVIDER}` }}
+      >
         <button
           onClick={() => supabase.auth.signOut()}
-          className="flex items-center gap-3 px-3 py-2 text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg w-full mt-auto"
+          style={{ color: SB_MUTED }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.color = 'oklch(62% 0.18 22)';
+            (e.currentTarget as HTMLElement).style.background = 'oklch(22% 0.025 215)';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.color = SB_MUTED;
+            (e.currentTarget as HTMLElement).style.background = 'transparent';
+          }}
+          className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg w-full transition-colors"
         >
-          <LogOut className="w-4 h-4" />
-          <span>Sign out</span>
+          <LogOut style={{ width: 14, height: 14 }} />
+          Sign out
         </button>
       </div>
     </aside>

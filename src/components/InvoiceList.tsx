@@ -56,7 +56,7 @@ function InvoiceRow({ invoice, client, onEdit, onView, onSend, onMarkPaid, onDel
             <Eye className="w-4 h-4" />
           </button>
           {invoice.status === "draft" && (
-            <button onClick={() => onEdit(invoice.id)} className="p-1 text-gray-400 hover:text-indigo-600 rounded" title="Edit">
+            <button onClick={() => onEdit(invoice.id)} className="p-1 text-gray-400 hover:text-[oklch(42%_0.11_200)] rounded" title="Edit">
               <Edit className="w-4 h-4" />
             </button>
           )}
@@ -107,7 +107,7 @@ export default function InvoiceList({ onAdd, onEdit, onView }: InvoiceListProps)
         <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
         <button
           onClick={onAdd}
-          className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm font-medium"
+          className="flex items-center gap-2 bg-[oklch(42%_0.11_200)] text-white px-4 py-2 rounded-lg hover:bg-[oklch(36%_0.11_200)] text-sm font-medium"
         >
           <Plus className="w-4 h-4" /> New Invoice
         </button>
@@ -118,7 +118,7 @@ export default function InvoiceList({ onAdd, onEdit, onView }: InvoiceListProps)
           <button
             key={s}
             onClick={() => setFilter(s)}
-            className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${filter === s ? "bg-indigo-600 text-white" : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"}`}
+            className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${filter === s ? "bg-[oklch(42%_0.11_200)] text-white" : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"}`}
           >
             {s}
           </button>

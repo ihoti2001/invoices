@@ -44,7 +44,7 @@ function ClientRow({ client, totalBilled, outstanding, invoiceCount, onEdit, onD
       <td className="px-6 py-4 text-sm text-amber-700">{outstanding > 0 ? formatCurrency(outstanding) : "—"}</td>
       <td className="px-6 py-4 text-right">
         <div className="flex items-center justify-end gap-1">
-          <button onClick={() => onEdit(client)} className="p-1 text-gray-400 hover:text-indigo-600 rounded" title="Edit">
+          <button onClick={() => onEdit(client)} className="p-1 text-gray-400 hover:text-[oklch(42%_0.11_200)] rounded" title="Edit">
             <Edit className="w-4 h-4" />
           </button>
           <button
@@ -85,18 +85,18 @@ function ClientFormModal({ form, editing, onChange, onSubmit, onClose }: ClientF
                   value={form[field]}
                   onChange={(e) => onChange(field, e.target.value)}
                   required={field === "name"}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
                 />
               </div>
             ))}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
-              <input value={form.country} onChange={(e) => onChange("country", e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <input value={form.country} onChange={(e) => onChange("country", e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]" />
             </div>
           </div>
           <div className="flex justify-end gap-3 pt-2 border-t border-gray-200">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
-            <button type="submit" className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">{editing ? "Update" : "Add Client"}</button>
+            <button type="submit" className="px-4 py-2 text-sm bg-[oklch(42%_0.11_200)] text-white rounded-lg hover:bg-[oklch(36%_0.11_200)]">{editing ? "Update" : "Add Client"}</button>
           </div>
         </form>
       </div>
@@ -145,7 +145,7 @@ export default function ClientList() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Clients</h1>
-        <button onClick={openAdd} className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm font-medium">
+        <button onClick={openAdd} className="flex items-center gap-2 bg-[oklch(42%_0.11_200)] text-white px-4 py-2 rounded-lg hover:bg-[oklch(36%_0.11_200)] text-sm font-medium">
           <Plus className="w-4 h-4" /> New Client
         </button>
       </div>

@@ -26,7 +26,7 @@ interface BusinessSettings {
 }
 
 const defaultSettings: BusinessSettings = {
-  businessName: 'BizFlow Pro',
+  businessName: 'Ilir Hoti Web Design',
   email: 'billing@bizflowpro.com',
   phone: '+44 (0) 000 000 0000',
   address: '123 Business Street',
@@ -87,7 +87,7 @@ export default function Settings() {
         <button
           onClick={handleSave}
           className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all shadow ${
-            saved ? 'bg-green-600 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'
+            saved ? 'bg-green-600 text-white' : 'bg-[oklch(42%_0.11_200)] hover:bg-[oklch(36%_0.11_200)] text-white'
           }`}
         >
           <Save className="w-4 h-4" />
@@ -108,7 +108,7 @@ export default function Settings() {
               <input
                 value={settings.businessName}
                 onChange={e => update('businessName', e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
               />
             </div>
             <div>
@@ -117,7 +117,7 @@ export default function Settings() {
                 type="text"
                 value={settings.senderName}
                 onChange={e => update('senderName', e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
                 placeholder="Your name (used in email subject and From field)"
               />
             </div>
@@ -126,7 +126,7 @@ export default function Settings() {
               <input
                 value={settings.taxId}
                 onChange={e => update('taxId', e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
               />
             </div>
           </div>
@@ -135,7 +135,7 @@ export default function Settings() {
             <input
               value={settings.address}
               onChange={e => update('address', e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
             />
           </div>
           <div className="grid grid-cols-3 gap-4">
@@ -144,7 +144,7 @@ export default function Settings() {
               <input
                 value={settings.city}
                 onChange={e => update('city', e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
               />
             </div>
             <div>
@@ -152,7 +152,7 @@ export default function Settings() {
               <input
                 value={settings.postcode}
                 onChange={e => update('postcode', e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
                 placeholder="e.g. SW1A 1AA"
               />
             </div>
@@ -161,7 +161,7 @@ export default function Settings() {
               <input
                 value={settings.country}
                 onChange={e => update('country', e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
               />
             </div>
           </div>
@@ -184,7 +184,7 @@ export default function Settings() {
                   type="email"
                   value={settings.email}
                   onChange={e => update('email', e.target.value)}
-                  className="w-full pl-9 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-9 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
                 />
               </div>
             </div>
@@ -195,7 +195,7 @@ export default function Settings() {
                 <input
                   value={settings.phone}
                   onChange={e => update('phone', e.target.value)}
-                  className="w-full pl-9 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-9 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
                 />
               </div>
             </div>
@@ -207,7 +207,7 @@ export default function Settings() {
               <input
                 value={settings.website}
                 onChange={e => update('website', e.target.value)}
-                className="w-full pl-9 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-9 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
               />
             </div>
           </div>
@@ -227,7 +227,7 @@ export default function Settings() {
               <select
                 value={settings.currency}
                 onChange={e => update('currency', e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)] bg-white"
               >
                 <option value="USD">USD — US Dollar</option>
                 <option value="GBP">GBP — British Pound</option>
@@ -244,7 +244,7 @@ export default function Settings() {
                 max={100}
                 value={settings.defaultTaxRate}
                 onChange={e => update('defaultTaxRate', parseFloat(e.target.value) || 0)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
               />
             </div>
             <div>
@@ -254,7 +254,7 @@ export default function Settings() {
                 min={0}
                 value={settings.paymentTerms}
                 onChange={e => update('paymentTerms', e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
               />
             </div>
           </div>
@@ -264,7 +264,7 @@ export default function Settings() {
               <input
                 value={settings.invoicePrefix}
                 onChange={e => update('invoicePrefix', e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
               />
             </div>
           </div>
@@ -274,7 +274,7 @@ export default function Settings() {
               value={settings.invoiceNotes}
               onChange={e => update('invoiceNotes', e.target.value)}
               rows={3}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)] resize-none"
             />
           </div>
         </div>
@@ -294,7 +294,7 @@ export default function Settings() {
                 value={settings[field] as string}
                 onChange={(e) => update(field, e.target.value)}
                 placeholder={field === "sortCode" ? "e.g. 20-00-00" : ""}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
               />
             </div>
           ))}
@@ -304,7 +304,7 @@ export default function Settings() {
               value={settings.iban}
               onChange={(e) => update("iban", e.target.value)}
               placeholder="e.g. GB29 NWBK 6016 1331 9268 19"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
             />
           </div>
         </div>

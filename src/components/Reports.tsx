@@ -52,7 +52,7 @@ export default function Reports() {
   const totalExpenses = bills.reduce((s, b) => s + b.amount, 0);
   const netProfit = totalReceived - totalExpenses;
 
-  const PIE_COLORS = ['#94a3b8', '#3b82f6', '#22c55e', '#ef4444', '#6b7280'];
+  const PIE_COLORS = ['oklch(42% 0.11 200)', 'oklch(52% 0.15 158)', 'oklch(52% 0.18 22)', 'oklch(62% 0.013 210)', 'oklch(46% 0.019 210)'];
 
   const activityTypes: Record<string, string> = {
     invoice: '📄',
@@ -118,14 +118,14 @@ export default function Reports() {
           <div className="p-4">
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="oklch(93% 0.008 210)" />
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                 <Tooltip formatter={(v: unknown) => formatCurrency(Number(v))} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="Invoiced" fill="#3b82f6" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="Received" fill="#22c55e" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="Expenses" fill="#f87171" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="Invoiced" fill="oklch(42% 0.11 200)" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="Received" fill="oklch(52% 0.15 158)" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="Expenses" fill="oklch(52% 0.18 22)" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -167,11 +167,11 @@ export default function Reports() {
           <div className="p-4">
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={clientRevenue} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f0f0f0" />
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="oklch(93% 0.008 210)" />
                 <XAxis type="number" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} width={100} />
                 <Tooltip formatter={(v: unknown) => formatCurrency(Number(v))} />
-                <Bar dataKey="Revenue" fill="#6366f1" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="Revenue" fill="oklch(42% 0.11 200)" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -185,13 +185,13 @@ export default function Reports() {
           <div className="p-4">
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="oklch(93% 0.008 210)" />
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                 <Tooltip formatter={(v: unknown) => formatCurrency(Number(v))} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Line type="monotone" dataKey="Received" stroke="#22c55e" strokeWidth={2.5} dot={{ r: 4 }} />
-                <Line type="monotone" dataKey="Expenses" stroke="#ef4444" strokeWidth={2.5} dot={{ r: 4 }} strokeDasharray="4 4" />
+                <Line type="monotone" dataKey="Received" stroke="oklch(42% 0.11 200)" strokeWidth={2.5} dot={{ r: 4 }} />
+                <Line type="monotone" dataKey="Expenses" stroke="oklch(52% 0.18 22)" strokeWidth={2.5} dot={{ r: 4 }} strokeDasharray="4 4" />
               </LineChart>
             </ResponsiveContainer>
           </div>
