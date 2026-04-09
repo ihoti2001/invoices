@@ -15,6 +15,11 @@ interface BusinessSettings {
   invoicePrefix: string;
   paymentTerms: string;
   invoiceNotes: string;
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  sortCode: string;
+  iban: string;
 }
 
 const defaultSettings: BusinessSettings = {
@@ -31,6 +36,11 @@ const defaultSettings: BusinessSettings = {
   invoicePrefix: 'INV',
   paymentTerms: '30',
   invoiceNotes: 'Thank you for your business! Payment is due within the specified period.',
+  bankName: '',
+  accountName: '',
+  accountNumber: '',
+  sortCode: '',
+  iban: '',
 };
 
 const STORAGE_KEY = 'bizflow_settings';
@@ -235,6 +245,36 @@ export default function Settings() {
               onChange={e => update('invoiceNotes', e.target.value)}
               rows={3}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Payment Details */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment Details</h2>
+        <p className="text-sm text-gray-500 mb-4">These details appear at the bottom of every invoice.</p>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {(["bankName", "accountName", "accountNumber", "sortCode"] as (keyof BusinessSettings)[]).map((field) => (
+            <div key={field}>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {field === "bankName" ? "Bank Name" : field === "accountName" ? "Account Name" : field === "accountNumber" ? "Account Number" : "Sort Code"}
+              </label>
+              <input
+                value={settings[field] as string}
+                onChange={(e) => update(field, e.target.value)}
+                placeholder={field === "sortCode" ? "e.g. 20-00-00" : ""}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          ))}
+          <div className="sm:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">IBAN <span className="text-gray-400">(optional, for international clients)</span></label>
+            <input
+              value={settings.iban}
+              onChange={(e) => update("iban", e.target.value)}
+              placeholder="e.g. GB29 NWBK 6016 1331 9268 19"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
         </div>
