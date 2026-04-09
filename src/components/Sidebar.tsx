@@ -7,7 +7,9 @@ import {
   BarChart3,
   HelpCircle,
   ChevronDown,
+  LogOut,
 } from 'lucide-react';
+import { supabase } from "@/lib/supabase";
 
 type Page = 'dashboard' | 'invoices' | 'bills' | 'clients' | 'reports' | 'settings';
 
@@ -76,6 +78,13 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
         <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/50 hover:bg-white/5 hover:text-white/80 transition-colors">
           <HelpCircle className="w-4 h-4" />
           Help Center
+        </button>
+        <button
+          onClick={() => supabase.auth.signOut()}
+          className="flex items-center gap-3 px-3 py-2 text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg w-full mt-auto"
+        >
+          <LogOut className="w-4 h-4" />
+          <span>Sign out</span>
         </button>
       </div>
     </aside>
