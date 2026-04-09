@@ -23,6 +23,8 @@ Start every session with `resolve_repo { "path": "." }` to confirm the index is 
 
 ## Design Spec
 Full design at `docs/superpowers/specs/2026-04-09-invoices-app-refactor-supabase-design.md`.
+-Use impeccable plugin for UI elements during the design process.
+
 
 ## Code Style
 - Functional components only, no class components
