@@ -239,6 +239,47 @@ src/
 
 ---
 
+## Payment Details in Settings
+
+### Current State
+
+`BusinessSettings` (in `src/components/Settings.tsx`) has no payment fields. The interface covers business name, contact info, tax, currency, and invoice preferences only.
+
+### Changes Required
+
+Add the following fields to `BusinessSettings`:
+
+```typescript
+bankName:      string;   // e.g. "Barclays"
+accountName:   string;   // e.g. "Acme Ltd"
+accountNumber: string;   // e.g. "12345678"
+sortCode:      string;   // e.g. "20-00-00"
+iban:          string;   // optional, for international clients
+```
+
+Add a "Payment Details" section to the Settings UI with labelled inputs for each field. These values are saved alongside the rest of `BusinessSettings`.
+
+### Invoice Display
+
+The `InvoiceView` component reads `BusinessSettings` from storage and renders a "Payment Details" section at the bottom of every invoice showing bank name, account name, account number, and sort code (IBAN only shown if populated).
+
+### Phase 2 (Supabase)
+
+`BusinessSettings` is stored in a `settings` table in Supabase (one row per user), alongside the other tables. RLS applies — only the authenticated user can read or write their own settings row.
+
+```sql
+create table settings (
+  id           uuid primary key default gen_random_uuid(),
+  user_id      uuid references auth.users not null unique,
+  data         jsonb not null,
+  updated_at   timestamptz default now()
+);
+```
+
+Settings are stored as a single JSONB blob — simple to extend without schema migrations.
+
+---
+
 ## Out of Scope
 
 - Email sending (invoices sent via email)
