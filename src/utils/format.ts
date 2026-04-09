@@ -1,7 +1,7 @@
 export function formatCurrency(amount: number): string {
-  return amount.toLocaleString("en-US", {
+  return amount.toLocaleString("en-GB", {
     style: "currency",
-    currency: "USD",
+    currency: "GBP",
     minimumFractionDigits: 2,
   });
 }

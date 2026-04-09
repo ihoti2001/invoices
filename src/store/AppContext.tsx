@@ -267,7 +267,7 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
     const client = clients.find((c) => c.id === inv?.clientId);
     const paidAt = new Date().toISOString();
     await updateInvoice(id, { status: "paid", paidAt });
-    if (inv) await addActivityEntry(`Payment received from ${client?.company || client?.name} — ${inv.total.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 })}`, "payment");
+    if (inv) await addActivityEntry(`Payment received from ${client?.company || client?.name} — ${inv.total.toLocaleString("en-GB", { style: "currency", currency: "GBP", minimumFractionDigits: 2 })}`, "payment");
   };
 
   const getNextInvoiceNumber = (): string => {
