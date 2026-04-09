@@ -1,6 +1,6 @@
 # Implementation Progress
 
-## Status: Ready to execute Phase 1
+## Status: Phase 1 COMPLETE ✓ — Ready to execute Phase 2
 
 ## What's been done (planning)
 - Full codebase analysis via jCodemunch (repo: local/invoices app-e64fdfe4)
@@ -25,8 +25,8 @@
 - Phase 1: `docs/superpowers/plans/2026-04-09-phase1-refactor.md` (15 tasks)
 - Phase 2: `docs/superpowers/plans/2026-04-09-phase2-supabase.md` (10 tasks)
 
-## Phase 1 task list
-1. Set up Vitest ← START HERE
+## Phase 1 task list (ALL COMPLETE — 2026-04-09)
+1. Set up Vitest ✓
 2. Create src/utils/format.ts
 3. Create src/store/AppContext.tsx (replaces useStore.ts)
 4. Create domain hooks: useClients, useInvoices, useBills, useActivity
@@ -42,7 +42,7 @@
 14. Update Settings.tsx (payment details fields)
 15. Delete src/store/useStore.ts, final verification
 
-## Phase 2 task list (after Phase 1 complete)
+## Phase 2 task list (after Phase 1 complete) ← START HERE
 1. Create Supabase tables + RLS (SQL — USER ACTION NEEDED)
 2. Install @supabase/supabase-js, create .env.local (USER ACTION NEEDED for credentials)
 3. Create src/lib/supabase.ts
