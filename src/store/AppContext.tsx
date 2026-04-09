@@ -262,8 +262,8 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
     });
     if (error) throw error;
     await updateInvoice(id, { status: "sent" });
-    const inv = data.invoices.find((i) => i.id === id);
-    if (inv) await addActivity(`Invoice ${inv.invoiceNumber} sent to ${recipientEmail}`, "invoice");
+    const inv = invoices.find((i) => i.id === id);
+    if (inv) await addActivityEntry(`Invoice ${inv.invoiceNumber} sent to ${recipientEmail}`, "invoice");
   };
 
   const markInvoicePaid = async (id: string): Promise<void> => {
