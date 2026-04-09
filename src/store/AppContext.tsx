@@ -146,8 +146,15 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
     if (error) {
       const res = (error as unknown as { context?: Response }).context;
       if (res) {
-        const body = await res.json().catch(() => ({})) as { error?: string };
-        throw new Error(body.error ?? error.message);
+        try {
+          const text = await res.text();
+          console.error('Edge Function error body:', text);
+          let msg: string = text;
+          try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
+          throw new Error(msg || error.message);
+        } catch (readErr) {
+          if (readErr !== error && readErr instanceof Error) throw readErr;
+        }
       }
       throw error;
     }
@@ -170,8 +177,15 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
     if (error) {
       const res = (error as unknown as { context?: Response }).context;
       if (res) {
-        const body = await res.json().catch(() => ({})) as { error?: string };
-        throw new Error(body.error ?? error.message);
+        try {
+          const text = await res.text();
+          console.error('Edge Function error body:', text);
+          let msg: string = text;
+          try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
+          throw new Error(msg || error.message);
+        } catch (readErr) {
+          if (readErr !== error && readErr instanceof Error) throw readErr;
+        }
       }
       throw error;
     }
@@ -185,8 +199,15 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
     if (error) {
       const res = (error as unknown as { context?: Response }).context;
       if (res) {
-        const body = await res.json().catch(() => ({})) as { error?: string };
-        throw new Error(body.error ?? error.message);
+        try {
+          const text = await res.text();
+          console.error('Edge Function error body:', text);
+          let msg: string = text;
+          try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
+          throw new Error(msg || error.message);
+        } catch (readErr) {
+          if (readErr !== error && readErr instanceof Error) throw readErr;
+        }
       }
       throw error;
     }
@@ -260,8 +281,15 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
     if (error) {
       const res = (error as unknown as { context?: Response }).context;
       if (res) {
-        const body = await res.json().catch(() => ({})) as { error?: string };
-        throw new Error(body.error ?? error.message);
+        try {
+          const text = await res.text();
+          console.error('Edge Function error body:', text);
+          let msg: string = text;
+          try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
+          throw new Error(msg || error.message);
+        } catch (readErr) {
+          if (readErr !== error && readErr instanceof Error) throw readErr;
+        }
       }
       throw error;
     }
@@ -281,8 +309,15 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
     if (error) {
       const res = (error as unknown as { context?: Response }).context;
       if (res) {
-        const body = await res.json().catch(() => ({})) as { error?: string };
-        throw new Error(body.error ?? error.message);
+        try {
+          const text = await res.text();
+          console.error('Edge Function error body:', text);
+          let msg: string = text;
+          try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
+          throw new Error(msg || error.message);
+        } catch (readErr) {
+          if (readErr !== error && readErr instanceof Error) throw readErr;
+        }
       }
       throw error;
     }
@@ -291,14 +326,25 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
   };
 
   const sendInvoice = async (id: string, recipientEmail: string): Promise<void> => {
+    const { data: { session } } = await supabase.auth.getSession();
     const { data: _d, error } = await supabase.functions.invoke("send-invoice", {
       body: { invoiceId: id, recipientEmail },
+      headers: session?.access_token
+        ? { Authorization: `Bearer ${session.access_token}` }
+        : undefined,
     });
     if (error) {
       const res = (error as unknown as { context?: Response }).context;
       if (res) {
-        const body = await res.json().catch(() => ({})) as { error?: string };
-        throw new Error(body.error ?? error.message);
+        try {
+          const text = await res.text();
+          console.error('Edge Function error body:', text);
+          let msg: string = text;
+          try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
+          throw new Error(msg || error.message);
+        } catch (readErr) {
+          if (readErr !== error && readErr instanceof Error) throw readErr;
+        }
       }
       throw error;
     }
@@ -332,8 +378,15 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
     if (error) {
       const res = (error as unknown as { context?: Response }).context;
       if (res) {
-        const body = await res.json().catch(() => ({})) as { error?: string };
-        throw new Error(body.error ?? error.message);
+        try {
+          const text = await res.text();
+          console.error('Edge Function error body:', text);
+          let msg: string = text;
+          try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
+          throw new Error(msg || error.message);
+        } catch (readErr) {
+          if (readErr !== error && readErr instanceof Error) throw readErr;
+        }
       }
       throw error;
     }
@@ -357,8 +410,15 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
     if (error) {
       const res = (error as unknown as { context?: Response }).context;
       if (res) {
-        const body = await res.json().catch(() => ({})) as { error?: string };
-        throw new Error(body.error ?? error.message);
+        try {
+          const text = await res.text();
+          console.error('Edge Function error body:', text);
+          let msg: string = text;
+          try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
+          throw new Error(msg || error.message);
+        } catch (readErr) {
+          if (readErr !== error && readErr instanceof Error) throw readErr;
+        }
       }
       throw error;
     }
@@ -371,8 +431,15 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
     if (error) {
       const res = (error as unknown as { context?: Response }).context;
       if (res) {
-        const body = await res.json().catch(() => ({})) as { error?: string };
-        throw new Error(body.error ?? error.message);
+        try {
+          const text = await res.text();
+          console.error('Edge Function error body:', text);
+          let msg: string = text;
+          try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
+          throw new Error(msg || error.message);
+        } catch (readErr) {
+          if (readErr !== error && readErr instanceof Error) throw readErr;
+        }
       }
       throw error;
     }
