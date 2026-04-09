@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase } from "@/lib/supabase";
 import { Client, Invoice, Bill, ActivityLog } from "@/types";
+import { supabase } from "@/lib/supabase";
 
 export interface AppStore {
   loading: boolean;
@@ -15,7 +16,7 @@ export interface AppStore {
   addInvoice: (invoice: Omit<Invoice, "id" | "createdAt">) => Promise<Invoice>;
   updateInvoice: (id: string, updates: Partial<Invoice>) => Promise<void>;
   deleteInvoice: (id: string) => Promise<void>;
-  sendInvoice: (id: string) => Promise<void>;
+  sendInvoice: (id: string, recipientEmail: string) => Promise<void>;
   markInvoicePaid: (id: string) => Promise<void>;
   getNextInvoiceNumber: () => string;
   addBill: (bill: Omit<Bill, "id" | "createdAt">) => Promise<Bill>;
@@ -255,11 +256,14 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
     if (inv) await addActivityEntry(`Invoice ${inv.invoiceNumber} deleted`, "invoice");
   };
 
-  const sendInvoice = async (id: string): Promise<void> => {
-    const inv = invoices.find((i) => i.id === id);
-    const client = clients.find((c) => c.id === inv?.clientId);
+  const sendInvoice = async (id: string, recipientEmail: string): Promise<void> => {
+    const { error } = await supabase.functions.invoke("send-invoice", {
+      body: { invoiceId: id, recipientEmail },
+    });
+    if (error) throw error;
     await updateInvoice(id, { status: "sent" });
-    if (inv) await addActivityEntry(`Invoice ${inv.invoiceNumber} sent to ${client?.email || "client"}`, "invoice");
+    const inv = data.invoices.find((i) => i.id === id);
+    if (inv) await addActivity(`Invoice ${inv.invoiceNumber} sent to ${recipientEmail}`, "invoice");
   };
 
   const markInvoicePaid = async (id: string): Promise<void> => {
