@@ -21,6 +21,7 @@ interface BusinessSettings {
   accountNumber: string;
   sortCode: string;
   iban: string;
+  senderName: string;
 }
 
 const defaultSettings: BusinessSettings = {
@@ -34,6 +35,7 @@ const defaultSettings: BusinessSettings = {
   taxId: 'TAX-123456789',
   defaultTaxRate: 10,
   currency: 'GBP',
+  senderName: 'Ilir Hoti',
   invoicePrefix: 'INV',
   paymentTerms: '30',
   invoiceNotes: 'Thank you for your business! Payment is due within the specified period.',
@@ -105,6 +107,16 @@ export default function Settings() {
                 value={settings.businessName}
                 onChange={e => update('businessName', e.target.value)}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Sender Name</label>
+              <input
+                type="text"
+                value={settings.senderName}
+                onChange={e => update('senderName', e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Your name (used in email subject and From field)"
               />
             </div>
             <div>
