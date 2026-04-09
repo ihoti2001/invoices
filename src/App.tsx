@@ -24,9 +24,12 @@ function App() {
   const { invoices, sendInvoice, markInvoicePaid } = useInvoices();
   const { clients } = useClients();
 
-  const handleSendFromView = async (id: string, email: string) => {
-    await sendInvoice(id, email);
-  };
+  const viewInvoice = modal?.type === "invoice-view"
+    ? invoices.find((i) => i.id === modal.invoiceId)
+    : undefined;
+  const viewClient = viewInvoice
+    ? clients.find((c) => c.id === viewInvoice.clientId)
+    : undefined;
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -58,19 +61,15 @@ function App() {
           onClose={() => setModal(null)}
         />
       )}
-      {modal?.type === "invoice-view" && (() => {
-        const invoice = invoices.find(i => i.id === modal.invoiceId);
-        const client = clients.find(c => c.id === invoice?.clientId);
-        return invoice ? (
-          <InvoiceView
-            invoice={invoice}
-            client={client}
-            onClose={() => setModal(null)}
-            onSend={handleSendFromView}
-            onMarkPaid={markInvoicePaid}
-          />
-        ) : null;
-      })()}
+      {modal?.type === "invoice-view" && viewInvoice && (
+        <InvoiceView
+          invoice={viewInvoice}
+          client={viewClient}
+          onClose={() => setModal(null)}
+          onSend={sendInvoice}
+          onMarkPaid={markInvoicePaid}
+        />
+      )}
     </div>
   );
 }
