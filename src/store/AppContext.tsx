@@ -1,177 +1,328 @@
+// src/store/AppContext.tsx
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { supabase } from "@/lib/supabase";
 import { Client, Invoice, Bill, ActivityLog } from "@/types";
 
-const STORAGE_KEY = "billingapp_data";
-
-interface AppData {
-  clients: Client[];
-  invoices: Invoice[];
-  bills: Bill[];
-  activityLog: ActivityLog[];
-}
-
-const defaultData: AppData = {
-  clients: [
-    { id: "c1", name: "John Smith", email: "john@acmecorp.com", phone: "+1 555-0101", address: "123 Business Ave", city: "New York", country: "USA", company: "Acme Corporation", createdAt: "2026-01-05T10:00:00Z" },
-    { id: "c2", name: "Sarah Johnson", email: "sarah@techstart.io", phone: "+1 555-0202", address: "456 Tech Street", city: "San Francisco", country: "USA", company: "TechStart Inc.", createdAt: "2026-01-10T10:00:00Z" },
-    { id: "c3", name: "Michael Brown", email: "michael@globalventures.com", phone: "+1 555-0303", address: "789 Commerce Blvd", city: "Chicago", country: "USA", company: "Global Ventures LLC", createdAt: "2026-02-01T10:00:00Z" },
-    { id: "c4", name: "Emily Davis", email: "emily@brightdesign.co", phone: "+1 555-0404", address: "321 Creative Lane", city: "Austin", country: "USA", company: "Bright Design Co.", createdAt: "2026-02-15T10:00:00Z" },
-  ],
-  invoices: [
-    { id: "inv1", invoiceNumber: "INV-001", clientId: "c1", status: "paid", issueDate: "2026-01-15", dueDate: "2026-02-15", lineItems: [{ id: "li1", description: "Web Development Services", quantity: 40, rate: 125, amount: 5000 }, { id: "li2", description: "UI/UX Design", quantity: 20, rate: 95, amount: 1900 }], subtotal: 6900, taxRate: 10, taxAmount: 690, total: 7590, notes: "Thank you for your business!", createdAt: "2026-01-15T10:00:00Z", paidAt: "2026-02-10T10:00:00Z" },
-    { id: "inv2", invoiceNumber: "INV-002", clientId: "c2", status: "paid", issueDate: "2026-02-01", dueDate: "2026-03-01", lineItems: [{ id: "li3", description: "SEO Consulting", quantity: 10, rate: 200, amount: 2000 }, { id: "li4", description: "Content Strategy", quantity: 5, rate: 150, amount: 750 }], subtotal: 2750, taxRate: 10, taxAmount: 275, total: 3025, notes: "Payment due within 30 days.", createdAt: "2026-02-01T10:00:00Z", paidAt: "2026-02-25T10:00:00Z" },
-    { id: "inv3", invoiceNumber: "INV-003", clientId: "c3", status: "overdue", issueDate: "2026-02-15", dueDate: "2026-03-15", lineItems: [{ id: "li5", description: "Mobile App Development", quantity: 60, rate: 150, amount: 9000 }], subtotal: 9000, taxRate: 10, taxAmount: 900, total: 9900, notes: "", createdAt: "2026-02-15T10:00:00Z" },
-    { id: "inv4", invoiceNumber: "INV-004", clientId: "c4", status: "sent", issueDate: "2026-03-01", dueDate: "2026-04-01", lineItems: [{ id: "li6", description: "Brand Identity Design", quantity: 1, rate: 3500, amount: 3500 }, { id: "li7", description: "Logo Design", quantity: 1, rate: 800, amount: 800 }], subtotal: 4300, taxRate: 10, taxAmount: 430, total: 4730, notes: "Includes 2 revision rounds.", createdAt: "2026-03-01T10:00:00Z" },
-    { id: "inv5", invoiceNumber: "INV-005", clientId: "c1", status: "draft", issueDate: "2026-03-20", dueDate: "2026-04-20", lineItems: [{ id: "li8", description: "Maintenance & Support", quantity: 1, rate: 2000, amount: 2000 }], subtotal: 2000, taxRate: 10, taxAmount: 200, total: 2200, notes: "Monthly retainer.", createdAt: "2026-03-20T10:00:00Z" },
-  ],
-  bills: [
-    { id: "b1", billNumber: "BILL-001", vendor: "AWS", category: "Cloud Services", status: "paid", issueDate: "2026-01-01", dueDate: "2026-01-31", amount: 450, description: "Monthly cloud hosting", createdAt: "2026-01-01T10:00:00Z" },
-    { id: "b2", billNumber: "BILL-002", vendor: "Adobe", category: "Software", status: "paid", issueDate: "2026-02-01", dueDate: "2026-02-28", amount: 120, description: "Creative Cloud subscription", createdAt: "2026-02-01T10:00:00Z" },
-    { id: "b3", billNumber: "BILL-003", vendor: "Office Rent", category: "Office", status: "pending", issueDate: "2026-03-01", dueDate: "2026-04-01", amount: 2500, description: "Monthly office rent", createdAt: "2026-03-01T10:00:00Z" },
-    { id: "b4", billNumber: "BILL-004", vendor: "Slack", category: "Software", status: "overdue", issueDate: "2026-02-15", dueDate: "2026-03-15", amount: 80, description: "Team communication tool", createdAt: "2026-02-15T10:00:00Z" },
-  ],
-  activityLog: [
-    { id: "a1", date: "2026-03-20T10:00:00Z", description: "Invoice INV-005 created as draft for Acme Corporation", type: "invoice" },
-    { id: "a2", date: "2026-03-05T10:00:00Z", description: "Invoice INV-004 sent to Bright Design Co.", type: "invoice" },
-    { id: "a3", date: "2026-03-01T10:00:00Z", description: "Invoice INV-004 created for Bright Design Co.", type: "invoice" },
-    { id: "a4", date: "2026-02-25T10:00:00Z", description: "Payment received from TechStart Inc. — $3,025.00", type: "payment" },
-    { id: "a5", date: "2026-02-15T10:00:00Z", description: "Invoice INV-003 created for Global Ventures LLC", type: "invoice" },
-    { id: "a6", date: "2026-02-10T10:00:00Z", description: "Payment received from Acme Corporation — $7,590.00", type: "payment" },
-    { id: "a7", date: "2026-02-01T10:00:00Z", description: "Invoice INV-002 created for TechStart Inc.", type: "invoice" },
-    { id: "a8", date: "2026-01-15T10:00:00Z", description: "Invoice INV-001 created for Acme Corporation", type: "invoice" },
-  ],
-};
-
-function loadData(): AppData {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch {}
-  return defaultData;
-}
-
-function saveData(data: AppData): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch {}
-}
-
 export interface AppStore {
+  loading: boolean;
   clients: Client[];
   invoices: Invoice[];
   bills: Bill[];
   activityLog: ActivityLog[];
-  addClient: (client: Omit<Client, "id" | "createdAt">) => Client;
-  updateClient: (id: string, updates: Partial<Client>) => void;
-  deleteClient: (id: string) => void;
-  addInvoice: (invoice: Omit<Invoice, "id" | "createdAt">) => Invoice;
-  updateInvoice: (id: string, updates: Partial<Invoice>) => void;
-  deleteInvoice: (id: string) => void;
-  sendInvoice: (id: string) => void;
-  markInvoicePaid: (id: string) => void;
+  addClient: (client: Omit<Client, "id" | "createdAt">) => Promise<Client>;
+  updateClient: (id: string, updates: Partial<Client>) => Promise<void>;
+  deleteClient: (id: string) => Promise<void>;
+  addInvoice: (invoice: Omit<Invoice, "id" | "createdAt">) => Promise<Invoice>;
+  updateInvoice: (id: string, updates: Partial<Invoice>) => Promise<void>;
+  deleteInvoice: (id: string) => Promise<void>;
+  sendInvoice: (id: string) => Promise<void>;
+  markInvoicePaid: (id: string) => Promise<void>;
   getNextInvoiceNumber: () => string;
-  addBill: (bill: Omit<Bill, "id" | "createdAt">) => Bill;
-  updateBill: (id: string, updates: Partial<Bill>) => void;
-  deleteBill: (id: string) => void;
+  addBill: (bill: Omit<Bill, "id" | "createdAt">) => Promise<Bill>;
+  updateBill: (id: string, updates: Partial<Bill>) => Promise<void>;
+  deleteBill: (id: string) => Promise<void>;
   getNextBillNumber: () => string;
 }
 
 const AppContext = createContext<AppStore | null>(null);
 
-export function AppProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<AppData>(loadData);
+// --- DB row → app type mappers ---
 
-  useEffect(() => { saveData(data); }, [data]);
+function toClient(row: Record<string, unknown>): Client {
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    email: (row.email as string) ?? "",
+    phone: (row.phone as string) ?? "",
+    address: (row.address as string) ?? "",
+    city: (row.city as string) ?? "",
+    country: (row.country as string) ?? "",
+    company: (row.company as string) ?? "",
+    createdAt: row.created_at as string,
+  };
+}
 
-  const addActivity = (description: string, type: ActivityLog["type"]) => {
-    const log: ActivityLog = { id: crypto.randomUUID(), date: new Date().toISOString(), description, type };
-    setData((prev) => ({ ...prev, activityLog: [log, ...prev.activityLog] }));
+function toInvoice(row: Record<string, unknown>, lineItems: Invoice["lineItems"]): Invoice {
+  return {
+    id: row.id as string,
+    invoiceNumber: row.invoice_number as string,
+    clientId: (row.client_id as string) ?? "",
+    status: row.status as Invoice["status"],
+    issueDate: (row.issue_date as string) ?? "",
+    dueDate: (row.due_date as string) ?? "",
+    lineItems,
+    subtotal: Number(row.subtotal),
+    taxRate: Number(row.tax_rate),
+    taxAmount: Number(row.tax_amount),
+    total: Number(row.total),
+    notes: (row.notes as string) ?? "",
+    createdAt: row.created_at as string,
+    paidAt: row.paid_at as string | undefined,
+  };
+}
+
+function toBill(row: Record<string, unknown>): Bill {
+  return {
+    id: row.id as string,
+    billNumber: row.bill_number as string,
+    vendor: row.vendor as string,
+    category: row.category as string,
+    status: row.status as Bill["status"],
+    issueDate: (row.issue_date as string) ?? "",
+    dueDate: (row.due_date as string) ?? "",
+    amount: Number(row.amount),
+    description: (row.description as string) ?? "",
+    createdAt: row.created_at as string,
+  };
+}
+
+function toActivityLog(row: Record<string, unknown>): ActivityLog {
+  return {
+    id: row.id as string,
+    date: row.date as string,
+    description: row.description as string,
+    type: row.type as ActivityLog["type"],
+  };
+}
+
+// --- Provider ---
+
+export function AppProvider({ userId, children }: { userId: string; children: ReactNode }) {
+  const [loading, setLoading] = useState(true);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [bills, setBills] = useState<Bill[]>([]);
+  const [activityLog, setActivityLog] = useState<ActivityLog[]>([]);
+
+  useEffect(() => {
+    async function load() {
+      const [clientsRes, invoicesRes, lineItemsRes, billsRes, activityRes] = await Promise.all([
+        supabase.from("clients").select("*").eq("user_id", userId).order("created_at"),
+        supabase.from("invoices").select("*").eq("user_id", userId).order("created_at"),
+        supabase.from("invoice_line_items").select("*"),
+        supabase.from("bills").select("*").eq("user_id", userId).order("created_at"),
+        supabase.from("activity_log").select("*").eq("user_id", userId).order("date", { ascending: false }).limit(50),
+      ]);
+
+      const lineItemsByInvoice: Record<string, Invoice["lineItems"]> = {};
+      for (const li of (lineItemsRes.data ?? [])) {
+        const inv = li.invoice_id as string;
+        if (!lineItemsByInvoice[inv]) lineItemsByInvoice[inv] = [];
+        lineItemsByInvoice[inv].push({
+          id: li.id as string,
+          description: li.description as string,
+          quantity: Number(li.quantity),
+          rate: Number(li.rate),
+          amount: Number(li.amount),
+        });
+      }
+
+      setClients((clientsRes.data ?? []).map(toClient));
+      setInvoices((invoicesRes.data ?? []).map((r) => toInvoice(r, lineItemsByInvoice[r.id as string] ?? [])));
+      setBills((billsRes.data ?? []).map(toBill));
+      setActivityLog((activityRes.data ?? []).map(toActivityLog));
+      setLoading(false);
+    }
+    load();
+  }, [userId]);
+
+  const addActivityEntry = async (description: string, type: ActivityLog["type"]) => {
+    const { data } = await supabase
+      .from("activity_log")
+      .insert({ user_id: userId, description, type })
+      .select()
+      .single();
+    if (data) setActivityLog((prev) => [toActivityLog(data), ...prev]);
   };
 
-  const addClient = (client: Omit<Client, "id" | "createdAt">): Client => {
-    const newClient: Client = { ...client, id: crypto.randomUUID(), createdAt: new Date().toISOString() };
-    setData((prev) => ({ ...prev, clients: [...prev.clients, newClient] }));
-    addActivity(`New client added: ${client.company || client.name}`, "client");
+  // --- Client mutations ---
+
+  const addClient = async (client: Omit<Client, "id" | "createdAt">): Promise<Client> => {
+    const { data, error } = await supabase
+      .from("clients")
+      .insert({ user_id: userId, name: client.name, email: client.email, phone: client.phone, address: client.address, city: client.city, country: client.country, company: client.company })
+      .select()
+      .single();
+    if (error) throw error;
+    const newClient = toClient(data);
+    setClients((prev) => [...prev, newClient]);
+    await addActivityEntry(`New client added: ${client.company || client.name}`, "client");
     return newClient;
   };
 
-  const updateClient = (id: string, updates: Partial<Client>) => {
-    setData((prev) => ({ ...prev, clients: prev.clients.map((c) => (c.id === id ? { ...c, ...updates } : c)) }));
-    addActivity(`Client updated: ${updates.company || updates.name || id}`, "client");
+  const updateClient = async (id: string, updates: Partial<Client>): Promise<void> => {
+    const { error } = await supabase.from("clients").update({
+      ...(updates.name && { name: updates.name }),
+      ...(updates.email !== undefined && { email: updates.email }),
+      ...(updates.phone !== undefined && { phone: updates.phone }),
+      ...(updates.address !== undefined && { address: updates.address }),
+      ...(updates.city !== undefined && { city: updates.city }),
+      ...(updates.country !== undefined && { country: updates.country }),
+      ...(updates.company !== undefined && { company: updates.company }),
+    }).eq("id", id);
+    if (error) throw error;
+    setClients((prev) => prev.map((c) => (c.id === id ? { ...c, ...updates } : c)));
+    await addActivityEntry(`Client updated: ${updates.company || updates.name || id}`, "client");
   };
 
-  const deleteClient = (id: string) => {
-    const client = data.clients.find((c) => c.id === id);
-    setData((prev) => ({ ...prev, clients: prev.clients.filter((c) => c.id !== id) }));
-    if (client) addActivity(`Client deleted: ${client.company || client.name}`, "client");
+  const deleteClient = async (id: string): Promise<void> => {
+    const client = clients.find((c) => c.id === id);
+    const { error } = await supabase.from("clients").delete().eq("id", id);
+    if (error) throw error;
+    setClients((prev) => prev.filter((c) => c.id !== id));
+    if (client) await addActivityEntry(`Client deleted: ${client.company || client.name}`, "client");
   };
 
-  const addInvoice = (invoice: Omit<Invoice, "id" | "createdAt">): Invoice => {
-    const newInvoice: Invoice = { ...invoice, id: crypto.randomUUID(), createdAt: new Date().toISOString() };
-    const client = data.clients.find((c) => c.id === invoice.clientId);
-    setData((prev) => ({ ...prev, invoices: [...prev.invoices, newInvoice] }));
-    addActivity(`Invoice ${invoice.invoiceNumber} created for ${client?.company || client?.name || "Unknown"}`, "invoice");
+  // --- Invoice mutations ---
+
+  const addInvoice = async (invoice: Omit<Invoice, "id" | "createdAt">): Promise<Invoice> => {
+    const { data: invRow, error: invErr } = await supabase
+      .from("invoices")
+      .insert({
+        user_id: userId,
+        client_id: invoice.clientId || null,
+        invoice_number: invoice.invoiceNumber,
+        status: invoice.status,
+        issue_date: invoice.issueDate,
+        due_date: invoice.dueDate,
+        subtotal: invoice.subtotal,
+        tax_rate: invoice.taxRate,
+        tax_amount: invoice.taxAmount,
+        total: invoice.total,
+        notes: invoice.notes,
+        ...(invoice.paidAt ? { paid_at: invoice.paidAt } : {}),
+      })
+      .select()
+      .single();
+    if (invErr) throw invErr;
+
+    const lineItemRows = invoice.lineItems.map((li) => ({
+      invoice_id: invRow.id,
+      description: li.description,
+      quantity: li.quantity,
+      rate: li.rate,
+      amount: li.amount,
+    }));
+    const { data: liData, error: liErr } = await supabase.from("invoice_line_items").insert(lineItemRows).select();
+    if (liErr) throw liErr;
+
+    const lineItems: Invoice["lineItems"] = (liData ?? []).map((li) => ({
+      id: li.id as string,
+      description: li.description as string,
+      quantity: Number(li.quantity),
+      rate: Number(li.rate),
+      amount: Number(li.amount),
+    }));
+
+    const newInvoice = toInvoice(invRow, lineItems);
+    setInvoices((prev) => [...prev, newInvoice]);
+    const client = clients.find((c) => c.id === invoice.clientId);
+    await addActivityEntry(`Invoice ${invoice.invoiceNumber} created for ${client?.company || client?.name || "Unknown"}`, "invoice");
     return newInvoice;
   };
 
-  const updateInvoice = (id: string, updates: Partial<Invoice>) => {
-    setData((prev) => ({ ...prev, invoices: prev.invoices.map((inv) => (inv.id === id ? { ...inv, ...updates } : inv)) }));
+  const updateInvoice = async (id: string, updates: Partial<Invoice>): Promise<void> => {
+    const dbUpdates: Record<string, unknown> = {};
+    if (updates.status !== undefined) dbUpdates.status = updates.status;
+    if (updates.invoiceNumber !== undefined) dbUpdates.invoice_number = updates.invoiceNumber;
+    if (updates.clientId !== undefined) dbUpdates.client_id = updates.clientId;
+    if (updates.issueDate !== undefined) dbUpdates.issue_date = updates.issueDate;
+    if (updates.dueDate !== undefined) dbUpdates.due_date = updates.dueDate;
+    if (updates.subtotal !== undefined) dbUpdates.subtotal = updates.subtotal;
+    if (updates.taxRate !== undefined) dbUpdates.tax_rate = updates.taxRate;
+    if (updates.taxAmount !== undefined) dbUpdates.tax_amount = updates.taxAmount;
+    if (updates.total !== undefined) dbUpdates.total = updates.total;
+    if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
+    if (updates.paidAt !== undefined) dbUpdates.paid_at = updates.paidAt;
+
+    const { error } = await supabase.from("invoices").update(dbUpdates).eq("id", id);
+    if (error) throw error;
+
+    if (updates.lineItems) {
+      await supabase.from("invoice_line_items").delete().eq("invoice_id", id);
+      const rows = updates.lineItems.map((li) => ({ invoice_id: id, description: li.description, quantity: li.quantity, rate: li.rate, amount: li.amount }));
+      await supabase.from("invoice_line_items").insert(rows);
+    }
+
+    setInvoices((prev) => prev.map((inv) => (inv.id === id ? { ...inv, ...updates } : inv)));
   };
 
-  const deleteInvoice = (id: string) => {
-    const inv = data.invoices.find((i) => i.id === id);
-    setData((prev) => ({ ...prev, invoices: prev.invoices.filter((i) => i.id !== id) }));
-    if (inv) addActivity(`Invoice ${inv.invoiceNumber} deleted`, "invoice");
+  const deleteInvoice = async (id: string): Promise<void> => {
+    const inv = invoices.find((i) => i.id === id);
+    const { error } = await supabase.from("invoices").delete().eq("id", id);
+    if (error) throw error;
+    setInvoices((prev) => prev.filter((i) => i.id !== id));
+    if (inv) await addActivityEntry(`Invoice ${inv.invoiceNumber} deleted`, "invoice");
   };
 
-  const sendInvoice = (id: string) => {
-    const inv = data.invoices.find((i) => i.id === id);
-    const client = data.clients.find((c) => c.id === inv?.clientId);
-    updateInvoice(id, { status: "sent" });
-    if (inv) addActivity(`Invoice ${inv.invoiceNumber} sent to ${client?.email || "client"}`, "invoice");
+  const sendInvoice = async (id: string): Promise<void> => {
+    const inv = invoices.find((i) => i.id === id);
+    const client = clients.find((c) => c.id === inv?.clientId);
+    await updateInvoice(id, { status: "sent" });
+    if (inv) await addActivityEntry(`Invoice ${inv.invoiceNumber} sent to ${client?.email || "client"}`, "invoice");
   };
 
-  const markInvoicePaid = (id: string) => {
-    const inv = data.invoices.find((i) => i.id === id);
-    const client = data.clients.find((c) => c.id === inv?.clientId);
-    updateInvoice(id, { status: "paid", paidAt: new Date().toISOString() });
-    if (inv) addActivity(`Payment received from ${client?.company || client?.name} — ${inv.total.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 })}`, "payment");
+  const markInvoicePaid = async (id: string): Promise<void> => {
+    const inv = invoices.find((i) => i.id === id);
+    const client = clients.find((c) => c.id === inv?.clientId);
+    const paidAt = new Date().toISOString();
+    await updateInvoice(id, { status: "paid", paidAt });
+    if (inv) await addActivityEntry(`Payment received from ${client?.company || client?.name} — ${inv.total.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 })}`, "payment");
   };
 
   const getNextInvoiceNumber = (): string => {
-    const nums = data.invoices.map((i) => parseInt(i.invoiceNumber.replace("INV-", "")) || 0);
+    const nums = invoices.map((i) => parseInt(i.invoiceNumber.replace("INV-", "")) || 0);
     const max = nums.length > 0 ? Math.max(...nums) : 0;
     return `INV-${String(max + 1).padStart(3, "0")}`;
   };
 
-  const addBill = (bill: Omit<Bill, "id" | "createdAt">): Bill => {
-    const newBill: Bill = { ...bill, id: crypto.randomUUID(), createdAt: new Date().toISOString() };
-    setData((prev) => ({ ...prev, bills: [...prev.bills, newBill] }));
-    addActivity(`Bill ${bill.billNumber} added from ${bill.vendor}`, "bill");
+  // --- Bill mutations ---
+
+  const addBill = async (bill: Omit<Bill, "id" | "createdAt">): Promise<Bill> => {
+    const { data, error } = await supabase
+      .from("bills")
+      .insert({ user_id: userId, bill_number: bill.billNumber, vendor: bill.vendor, category: bill.category, status: bill.status, issue_date: bill.issueDate, due_date: bill.dueDate, amount: bill.amount, description: bill.description })
+      .select()
+      .single();
+    if (error) throw error;
+    const newBill = toBill(data);
+    setBills((prev) => [...prev, newBill]);
+    await addActivityEntry(`Bill ${bill.billNumber} added from ${bill.vendor}`, "bill");
     return newBill;
   };
 
-  const updateBill = (id: string, updates: Partial<Bill>) => {
-    setData((prev) => ({ ...prev, bills: prev.bills.map((b) => (b.id === id ? { ...b, ...updates } : b)) }));
+  const updateBill = async (id: string, updates: Partial<Bill>): Promise<void> => {
+    const dbUpdates: Record<string, unknown> = {};
+    if (updates.billNumber !== undefined) dbUpdates.bill_number = updates.billNumber;
+    if (updates.vendor !== undefined) dbUpdates.vendor = updates.vendor;
+    if (updates.category !== undefined) dbUpdates.category = updates.category;
+    if (updates.status !== undefined) dbUpdates.status = updates.status;
+    if (updates.issueDate !== undefined) dbUpdates.issue_date = updates.issueDate;
+    if (updates.dueDate !== undefined) dbUpdates.due_date = updates.dueDate;
+    if (updates.amount !== undefined) dbUpdates.amount = updates.amount;
+    if (updates.description !== undefined) dbUpdates.description = updates.description;
+    const { error } = await supabase.from("bills").update(dbUpdates).eq("id", id);
+    if (error) throw error;
+    setBills((prev) => prev.map((b) => (b.id === id ? { ...b, ...updates } : b)));
   };
 
-  const deleteBill = (id: string) => {
-    const bill = data.bills.find((b) => b.id === id);
-    setData((prev) => ({ ...prev, bills: prev.bills.filter((b) => b.id !== id) }));
-    if (bill) addActivity(`Bill ${bill.billNumber} from ${bill.vendor} deleted`, "bill");
+  const deleteBill = async (id: string): Promise<void> => {
+    const bill = bills.find((b) => b.id === id);
+    const { error } = await supabase.from("bills").delete().eq("id", id);
+    if (error) throw error;
+    setBills((prev) => prev.filter((b) => b.id !== id));
+    if (bill) await addActivityEntry(`Bill ${bill.billNumber} from ${bill.vendor} deleted`, "bill");
   };
 
   const getNextBillNumber = (): string => {
-    const nums = data.bills.map((b) => parseInt(b.billNumber.replace("BILL-", "")) || 0);
+    const nums = bills.map((b) => parseInt(b.billNumber.replace("BILL-", "")) || 0);
     const max = nums.length > 0 ? Math.max(...nums) : 0;
     return `BILL-${String(max + 1).padStart(3, "0")}`;
   };
 
   const store: AppStore = {
-    clients: data.clients,
-    invoices: data.invoices,
-    bills: data.bills,
-    activityLog: data.activityLog,
+    loading,
+    clients, invoices, bills, activityLog,
     addClient, updateClient, deleteClient,
     addInvoice, updateInvoice, deleteInvoice, sendInvoice, markInvoicePaid, getNextInvoiceNumber,
     addBill, updateBill, deleteBill, getNextBillNumber,
