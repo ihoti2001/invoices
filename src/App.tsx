@@ -9,6 +9,7 @@ import ClientList from "./components/ClientList";
 import Reports from "./components/Reports";
 import Settings from "./components/Settings";
 import { useInvoices } from "@/store/useInvoices";
+import { useClients } from "@/store/useClients";
 
 type Page = "dashboard" | "invoices" | "bills" | "clients" | "reports" | "settings";
 
@@ -20,7 +21,8 @@ type Modal =
 function App() {
   const [page, setPage] = useState<Page>("dashboard");
   const [modal, setModal] = useState<Modal>(null);
-  const { sendInvoice } = useInvoices();
+  const { invoices, sendInvoice, markInvoicePaid } = useInvoices();
+  const { clients } = useClients();
 
   const handleSendFromView = async (id: string, email: string) => {
     await sendInvoice(id, email);
@@ -56,13 +58,19 @@ function App() {
           onClose={() => setModal(null)}
         />
       )}
-      {modal?.type === "invoice-view" && (
-        <InvoiceView
-          invoiceId={modal.invoiceId}
-          onClose={() => setModal(null)}
-          onSend={handleSendFromView}
-        />
-      )}
+      {modal?.type === "invoice-view" && (() => {
+        const invoice = invoices.find(i => i.id === modal.invoiceId);
+        const client = clients.find(c => c.id === invoice?.clientId);
+        return invoice ? (
+          <InvoiceView
+            invoice={invoice}
+            client={client}
+            onClose={() => setModal(null)}
+            onSend={handleSendFromView}
+            onMarkPaid={markInvoicePaid}
+          />
+        ) : null;
+      })()}
     </div>
   );
 }

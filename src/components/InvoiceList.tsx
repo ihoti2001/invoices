@@ -24,7 +24,7 @@ interface InvoiceRowProps {
   client: Client | undefined;
   onEdit: (id: string) => void;
   onView: (id: string) => void;
-  onSend: (id: string) => void;
+  onSend: (id: string, email: string) => Promise<void>;
   onMarkPaid: (id: string) => void;
   onDelete: (id: string) => void;
   confirmDelete: string | null;
@@ -61,7 +61,7 @@ function InvoiceRow({ invoice, client, onEdit, onView, onSend, onMarkPaid, onDel
             </button>
           )}
           {(invoice.status === "draft" || invoice.status === "sent") && (
-            <button onClick={() => onSend(invoice.id)} className="p-1 text-gray-400 hover:text-blue-600 rounded" title="Send">
+            <button onClick={() => onSend(invoice.id, client?.email ?? '')} className="p-1 text-gray-400 hover:text-blue-600 rounded" title="Send">
               <Send className="w-4 h-4" />
             </button>
           )}
