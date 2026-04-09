@@ -3,27 +3,26 @@ import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from 'recharts';
-import { Clock, AlertTriangle, CheckCircle, Users, Activity } from 'lucide-react';
-import AddNewMenu from './AddNewMenu';
+import { Clock, AlertTriangle, CheckCircle, Users, Activity, FileText } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
-import { Client, Invoice, Bill, ActivityLog } from '../types';
+import { useClients } from "@/store/useClients";
+import { useInvoices } from "@/store/useInvoices";
+import { useBills } from "@/store/useBills";
+import { useActivity } from "@/store/useActivity";
+import { formatCurrency } from "@/utils/format";
+import { ActivityLog } from '../types';
 
 interface DashboardProps {
-  clients: Client[];
-  invoices: Invoice[];
-  bills: Bill[];
-  activityLog: ActivityLog[];
   onNavigate: (page: string) => void;
-  onAddNew: () => void;
-  onNewClient: () => void;
-  onNewBill: () => void;
+  onAddInvoice: () => void;
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
+export default function Dashboard({ onNavigate, onAddInvoice }: DashboardProps) {
+  const { clients } = useClients();
+  const { invoices } = useInvoices();
+  const { bills } = useBills();
+  const { activityLog } = useActivity();
 
-export default function Dashboard({ clients, invoices, bills, activityLog, onNavigate, onAddNew, onNewClient, onNewBill }: DashboardProps) {
   const stats = useMemo(() => {
     const outstanding = invoices
       .filter(i => i.status === 'sent' || i.status === 'overdue')
@@ -88,7 +87,7 @@ export default function Dashboard({ clients, invoices, bills, activityLog, onNav
   const getActivityIcon = (type: ActivityLog['type']) => {
     switch (type) {
       case 'payment': return <CheckCircle className="w-3 h-3 text-green-400" />;
-      case 'invoice': return <FileTextIcon />;
+      case 'invoice': return <FileText className="w-3 h-3 text-blue-400" />;
       case 'client': return <Users className="w-3 h-3 text-blue-400" />;
       default: return <Activity className="w-3 h-3 text-gray-400" />;
     }
@@ -100,7 +99,7 @@ export default function Dashboard({ clients, invoices, bills, activityLog, onNav
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
         <button
-          onClick={onAddNew}
+          onClick={onAddInvoice}
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors shadow"
         >
           + Add New
@@ -252,13 +251,5 @@ export default function Dashboard({ clients, invoices, bills, activityLog, onNav
         </div>
       </div>
     </div>
-  );
-}
-
-function FileTextIcon() {
-  return (
-    <svg className="w-3 h-3 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-    </svg>
   );
 }
