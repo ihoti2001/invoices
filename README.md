@@ -1,12 +1,12 @@
-# Invoices — Ilir Hoti Web Design
+# Invoices — by Ilir Hoti
 
-A private invoicing and business management tool built for freelance web design work. Replaces spreadsheets and generic invoicing platforms with something purpose-built.
+A private invoicing and business management tool built for small businesses and freelancers. Replaces spreadsheets and generic invoicing platforms with something purpose-built and straightforward.
 
 ---
 
 ## What it does
 
-Running a freelance web design business means keeping track of clients, chasing payments, and knowing at a glance where you stand financially. Most invoicing tools are either too bloated or too basic. This one does exactly what's needed and nothing else.
+Running a small business means keeping track of clients, chasing payments, and knowing at a glance where you stand financially. Most invoicing tools are either too bloated or too basic. This one does exactly what's needed and nothing else.
 
 - **Dashboard** — live snapshot of outstanding, overdue, and collected revenue with charts
 - **Invoices** — create, send, and mark invoices as paid; track status from draft to collected
@@ -49,4 +49,4 @@ npm run dev
 
 ---
 
-© Ilir Hoti Web Design
+© Ilir Hoti
