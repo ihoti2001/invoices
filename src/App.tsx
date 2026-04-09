@@ -8,6 +8,7 @@ import BillList from "./components/BillList";
 import ClientList from "./components/ClientList";
 import Reports from "./components/Reports";
 import Settings from "./components/Settings";
+import { useInvoices } from "@/store/useInvoices";
 
 type Page = "dashboard" | "invoices" | "bills" | "clients" | "reports" | "settings";
 
@@ -19,6 +20,11 @@ type Modal =
 function App() {
   const [page, setPage] = useState<Page>("dashboard");
   const [modal, setModal] = useState<Modal>(null);
+  const { sendInvoice } = useInvoices();
+
+  const handleSendFromView = async (id: string, email: string) => {
+    await sendInvoice(id, email);
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -54,6 +60,7 @@ function App() {
         <InvoiceView
           invoiceId={modal.invoiceId}
           onClose={() => setModal(null)}
+          onSend={handleSendFromView}
         />
       )}
     </div>
