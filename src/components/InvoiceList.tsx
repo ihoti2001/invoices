@@ -1,50 +1,97 @@
-import { useState } from 'react';
-import { Plus, Search, Eye, Send, CheckCircle, Trash2, Edit, FileText } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
-import { Invoice, Client } from '../types';
+import { useState } from "react";
+import { Plus, Eye, Edit, Trash2, Send, CheckCircle } from "lucide-react";
+import { useInvoices } from "@/store/useInvoices";
+import { useClients } from "@/store/useClients";
+import { formatCurrency } from "@/utils/format";
+import { Invoice, Client } from "@/types";
+
+const statusColors: Record<string, string> = {
+  draft: "bg-gray-100 text-gray-600",
+  sent: "bg-blue-100 text-blue-700",
+  paid: "bg-green-100 text-green-700",
+  overdue: "bg-red-100 text-red-700",
+  cancelled: "bg-red-50 text-red-400",
+};
 
 interface InvoiceListProps {
-  invoices: Invoice[];
-  clients: Client[];
   onAdd: () => void;
-  onEdit: (invoice: Invoice) => void;
-  onView: (invoice: Invoice) => void;
+  onEdit: (id: string) => void;
+  onView: (id: string) => void;
+}
+
+interface InvoiceRowProps {
+  invoice: Invoice;
+  client: Client | undefined;
+  onEdit: (id: string) => void;
+  onView: (id: string) => void;
   onSend: (id: string) => void;
   onMarkPaid: (id: string) => void;
   onDelete: (id: string) => void;
+  confirmDelete: string | null;
 }
 
-const statusColors: Record<string, string> = {
-  draft: 'bg-gray-100 text-gray-600',
-  sent: 'bg-blue-100 text-blue-700',
-  paid: 'bg-green-100 text-green-700',
-  overdue: 'bg-red-100 text-red-700',
-  cancelled: 'bg-gray-100 text-gray-500',
-};
-
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+function InvoiceRow({ invoice, client, onEdit, onView, onSend, onMarkPaid, onDelete, confirmDelete }: InvoiceRowProps) {
+  return (
+    <tr className="hover:bg-gray-50">
+      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+        {invoice.invoiceNumber}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+        {client?.company || client?.name || "—"}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+        {invoice.dueDate}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+        {formatCurrency(invoice.total)}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusColors[invoice.status] || "bg-gray-100 text-gray-600"}`}>
+          {invoice.status}
+        </span>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+        <div className="flex items-center justify-end gap-1">
+          <button onClick={() => onView(invoice.id)} className="p-1 text-gray-400 hover:text-blue-600 rounded" title="View">
+            <Eye className="w-4 h-4" />
+          </button>
+          {invoice.status === "draft" && (
+            <button onClick={() => onEdit(invoice.id)} className="p-1 text-gray-400 hover:text-indigo-600 rounded" title="Edit">
+              <Edit className="w-4 h-4" />
+            </button>
+          )}
+          {(invoice.status === "draft" || invoice.status === "sent") && (
+            <button onClick={() => onSend(invoice.id)} className="p-1 text-gray-400 hover:text-blue-600 rounded" title="Send">
+              <Send className="w-4 h-4" />
+            </button>
+          )}
+          {invoice.status === "sent" && (
+            <button onClick={() => onMarkPaid(invoice.id)} className="p-1 text-gray-400 hover:text-green-600 rounded" title="Mark Paid">
+              <CheckCircle className="w-4 h-4" />
+            </button>
+          )}
+          <button
+            onClick={() => onDelete(invoice.id)}
+            className={`p-1 rounded ${confirmDelete === invoice.id ? "text-red-600 bg-red-50" : "text-gray-400 hover:text-red-600"}`}
+            title={confirmDelete === invoice.id ? "Click again to confirm" : "Delete"}
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
 }
 
-export default function InvoiceList({ invoices, clients, onAdd, onEdit, onView, onSend, onMarkPaid, onDelete }: InvoiceListProps) {
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+export default function InvoiceList({ onAdd, onEdit, onView }: InvoiceListProps) {
+  const { invoices, sendInvoice, markInvoicePaid, deleteInvoice } = useInvoices();
+  const { clients } = useClients();
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
-
-  const getClient = (clientId: string) => clients.find(c => c.id === clientId);
-
-  const filtered = invoices.filter(inv => {
-    const client = getClient(inv.clientId);
-    const matchesSearch = inv.invoiceNumber.toLowerCase().includes(search.toLowerCase()) ||
-      client?.name.toLowerCase().includes(search.toLowerCase()) ||
-      client?.company.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || inv.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const [filter, setFilter] = useState<string>("all");
 
   const handleDelete = (id: string) => {
     if (confirmDelete === id) {
-      onDelete(id);
+      deleteInvoice(id);
       setConfirmDelete(null);
     } else {
       setConfirmDelete(id);
@@ -52,127 +99,65 @@ export default function InvoiceList({ invoices, clients, onAdd, onEdit, onView, 
     }
   };
 
+  const filtered = filter === "all" ? invoices : invoices.filter((i) => i.status === filter);
+
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800">Invoices</h1>
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
         <button
           onClick={onAdd}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-semibold text-sm transition-colors shadow"
+          className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm font-medium"
         >
           <Plus className="w-4 h-4" /> New Invoice
         </button>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-3">
-        <div className="relative flex-1 min-w-48">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search invoices..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <select
-          value={statusFilter}
-          onChange={e => setStatusFilter(e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-        >
-          <option value="all">All Status</option>
-          <option value="draft">Draft</option>
-          <option value="sent">Sent</option>
-          <option value="paid">Paid</option>
-          <option value="overdue">Overdue</option>
-        </select>
-      </div>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-4 gap-4">
-        {[
-          { label: 'Total', value: invoices.reduce((s, i) => s + i.total, 0), color: 'text-gray-800' },
-          { label: 'Outstanding', value: invoices.filter(i => i.status === 'sent' || i.status === 'overdue').reduce((s, i) => s + i.total, 0), color: 'text-blue-700' },
-          { label: 'Overdue', value: invoices.filter(i => i.status === 'overdue').reduce((s, i) => s + i.total, 0), color: 'text-red-600' },
-          { label: 'Paid', value: invoices.filter(i => i.status === 'paid').reduce((s, i) => s + i.total, 0), color: 'text-green-700' },
-        ].map(card => (
-          <div key={card.label} className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="text-xs text-gray-500 mb-1">{card.label}</div>
-            <div className={`font-bold text-lg ${card.color}`}>{formatCurrency(card.value)}</div>
-          </div>
+      <div className="flex gap-2 mb-4">
+        {["all", "draft", "sent", "paid", "overdue"].map((s) => (
+          <button
+            key={s}
+            onClick={() => setFilter(s)}
+            className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${filter === s ? "bg-indigo-600 text-white" : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"}`}
+          >
+            {s}
+          </button>
         ))}
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b border-gray-100">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
             <tr>
-              <th className="text-left px-5 py-3 font-semibold text-gray-600">Invoice #</th>
-              <th className="text-left px-5 py-3 font-semibold text-gray-600">Client</th>
-              <th className="text-left px-5 py-3 font-semibold text-gray-600">Issue Date</th>
-              <th className="text-left px-5 py-3 font-semibold text-gray-600">Due Date</th>
-              <th className="text-right px-5 py-3 font-semibold text-gray-600">Amount</th>
-              <th className="text-center px-5 py-3 font-semibold text-gray-600">Status</th>
-              <th className="text-center px-5 py-3 font-semibold text-gray-600">Actions</th>
+              {["Invoice #", "Client", "Due Date", "Amount", "Status", ""].map((h) => (
+                <th key={h} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider last:text-right">
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-gray-200">
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center py-12 text-gray-400">
-                  <FileText className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                  <p>No invoices found</p>
+                <td colSpan={6} className="px-6 py-8 text-center text-gray-400 text-sm">
+                  No invoices found.
                 </td>
               </tr>
-            ) : filtered.map(inv => {
-              const client = getClient(inv.clientId);
-              return (
-                <tr key={inv.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-5 py-3.5 font-medium text-blue-600">{inv.invoiceNumber}</td>
-                  <td className="px-5 py-3.5">
-                    <div className="font-medium text-gray-800">{client?.company || client?.name || 'Unknown'}</div>
-                    <div className="text-xs text-gray-400">{client?.email}</div>
-                  </td>
-                  <td className="px-5 py-3.5 text-gray-600">{format(parseISO(inv.issueDate), 'MMM dd, yyyy')}</td>
-                  <td className="px-5 py-3.5 text-gray-600">{format(parseISO(inv.dueDate), 'MMM dd, yyyy')}</td>
-                  <td className="px-5 py-3.5 text-right font-semibold text-gray-800">{formatCurrency(inv.total)}</td>
-                  <td className="px-5 py-3.5 text-center">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${statusColors[inv.status]}`}>
-                      {inv.status.charAt(0).toUpperCase() + inv.status.slice(1)}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center justify-center gap-1">
-                      <button onClick={() => onView(inv)} title="View" className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-blue-600 transition-colors">
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button onClick={() => onEdit(inv)} title="Edit" className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-amber-600 transition-colors">
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      {(inv.status === 'draft' || inv.status === 'sent') && (
-                        <button onClick={() => onSend(inv.id)} title="Send to client" className="p-1.5 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-colors">
-                          <Send className="w-4 h-4" />
-                        </button>
-                      )}
-                      {inv.status !== 'paid' && inv.status !== 'draft' && (
-                        <button onClick={() => onMarkPaid(inv.id)} title="Mark as paid" className="p-1.5 rounded hover:bg-green-50 text-gray-500 hover:text-green-600 transition-colors">
-                          <CheckCircle className="w-4 h-4" />
-                        </button>
-                      )}
-                      <button
-                        onClick={() => handleDelete(inv.id)}
-                        title={confirmDelete === inv.id ? 'Click again to confirm' : 'Delete'}
-                        className={`p-1.5 rounded transition-colors ${confirmDelete === inv.id ? 'bg-red-100 text-red-600' : 'hover:bg-red-50 text-gray-500 hover:text-red-500'}`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+            ) : (
+              filtered.map((invoice) => (
+                <InvoiceRow
+                  key={invoice.id}
+                  invoice={invoice}
+                  client={clients.find((c) => c.id === invoice.clientId)}
+                  onEdit={onEdit}
+                  onView={onView}
+                  onSend={sendInvoice}
+                  onMarkPaid={markInvoicePaid}
+                  onDelete={handleDelete}
+                  confirmDelete={confirmDelete}
+                />
+              ))
+            )}
           </tbody>
         </table>
       </div>
