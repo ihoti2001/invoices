@@ -1,15 +1,9 @@
 import { useState } from 'react';
 import { Plus, Search, Edit, Trash2, CheckCircle, Receipt, X } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
-import { Bill } from '../types';
-
-interface BillListProps {
-  bills: Bill[];
-  nextBillNumber: string;
-  onAdd: (bill: Omit<Bill, 'id' | 'createdAt'>) => void;
-  onUpdate: (id: string, updates: Partial<Bill>) => void;
-  onDelete: (id: string) => void;
-}
+import { useBills } from "@/store/useBills";
+import { formatCurrency } from "@/utils/format";
+import { Bill } from "@/types";
 
 const statusColors: Record<string, string> = {
   pending: 'bg-amber-100 text-amber-700',
@@ -18,10 +12,6 @@ const statusColors: Record<string, string> = {
 };
 
 const CATEGORIES = ['Software', 'Cloud Services', 'Office', 'Utilities', 'Marketing', 'Travel', 'Insurance', 'Other'];
-
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
 
 interface BillFormData {
   billNumber: string;
@@ -34,14 +24,15 @@ interface BillFormData {
   description: string;
 }
 
-export default function BillList({ bills, nextBillNumber, onAdd, onUpdate, onDelete }: BillListProps) {
+export default function BillList() {
+  const { bills, addBill, updateBill, deleteBill, getNextBillNumber } = useBills();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showForm, setShowForm] = useState(false);
   const [editingBill, setEditingBill] = useState<Bill | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [form, setForm] = useState<BillFormData>({
-    billNumber: nextBillNumber,
+    billNumber: getNextBillNumber(),
     vendor: '',
     category: 'Other',
     status: 'pending',
@@ -62,7 +53,7 @@ export default function BillList({ bills, nextBillNumber, onAdd, onUpdate, onDel
   const openAdd = () => {
     setEditingBill(null);
     setForm({
-      billNumber: nextBillNumber,
+      billNumber: getNextBillNumber(),
       vendor: '',
       category: 'Other',
       status: 'pending',
@@ -92,16 +83,16 @@ export default function BillList({ bills, nextBillNumber, onAdd, onUpdate, onDel
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingBill) {
-      onUpdate(editingBill.id, form);
+      updateBill(editingBill.id, form);
     } else {
-      onAdd(form);
+      addBill(form);
     }
     setShowForm(false);
   };
 
   const handleDelete = (id: string) => {
     if (confirmDelete === id) {
-      onDelete(id);
+      deleteBill(id);
       setConfirmDelete(null);
     } else {
       setConfirmDelete(id);
@@ -110,7 +101,7 @@ export default function BillList({ bills, nextBillNumber, onAdd, onUpdate, onDel
   };
 
   const handleMarkPaid = (bill: Bill) => {
-    onUpdate(bill.id, { status: 'paid' });
+    updateBill(bill.id, { status: 'paid' });
   };
 
   return (
