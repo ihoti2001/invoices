@@ -4,19 +4,12 @@ import {
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from 'recharts';
 import { format, parseISO } from 'date-fns';
-import { Invoice, Bill, Client, ActivityLog } from '../types';
 import { TrendingUp, TrendingDown, DollarSign, FileText } from 'lucide-react';
-
-interface ReportsProps {
-  invoices: Invoice[];
-  bills: Bill[];
-  clients: Client[];
-  activityLog: ActivityLog[];
-}
-
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
+import { useInvoices } from "@/store/useInvoices";
+import { useBills } from "@/store/useBills";
+import { useClients } from "@/store/useClients";
+import { useActivity } from "@/store/useActivity";
+import { formatCurrency } from "@/utils/format";
 
 const MONTHS = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06'];
 const MONTH_LABELS: Record<string, string> = {
@@ -24,7 +17,11 @@ const MONTH_LABELS: Record<string, string> = {
   '2026-04': 'Apr', '2026-05': 'May', '2026-06': 'Jun',
 };
 
-export default function Reports({ invoices, bills, clients, activityLog }: ReportsProps) {
+export default function Reports() {
+  const { invoices } = useInvoices();
+  const { bills } = useBills();
+  const { clients } = useClients();
+  const { activityLog } = useActivity();
   const monthlyData = useMemo(() => {
     return MONTHS.map(month => {
       const invoiced = invoices.filter(i => i.issueDate.startsWith(month)).reduce((s, i) => s + i.total, 0);
