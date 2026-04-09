@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Save, Building2, Mail, Phone, Globe, CreditCard } from 'lucide-react';
+import { supabase } from "@/lib/supabase";
 
 interface BusinessSettings {
   businessName: string;
@@ -43,24 +44,26 @@ const defaultSettings: BusinessSettings = {
   iban: '',
 };
 
-const STORAGE_KEY = 'bizflow_settings';
-
-function loadSettings(): BusinessSettings {
-  try {
-    const s = localStorage.getItem(STORAGE_KEY);
-    if (s) return JSON.parse(s);
-  } catch {}
-  return defaultSettings;
-}
-
 export default function Settings() {
-  const [settings, setSettings] = useState<BusinessSettings>(() => loadSettings());
+  const [settings, setSettings] = useState<BusinessSettings>(defaultSettings);
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleSave = () => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-    } catch {}
+  useEffect(() => {
+    async function load() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.from("settings").select("data").eq("user_id", user.id).single();
+      if (data?.data) setSettings({ ...defaultSettings, ...data.data });
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  const handleSave = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from("settings").upsert({ user_id: user.id, data: settings, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };
@@ -68,6 +71,10 @@ export default function Settings() {
   const update = (key: keyof BusinessSettings, value: string | number) => {
     setSettings(s => ({ ...s, [key]: value }));
   };
+
+  if (loading) {
+    return <div className="p-6 text-gray-400 text-sm">Loading settings…</div>;
+  }
 
   return (
     <div className="p-6 space-y-6 max-w-2xl">
