@@ -75,7 +75,7 @@ serve(async (req) => {
     const senderName = settings.senderName || "Ilir Hoti";
     const fromEmail = "ilir@etikauk.com";
     const businessName = settings.businessName || senderName;
-    const businessAddress = [settings.address, settings.city, settings.country]
+    const businessAddress = [settings.address, settings.city, settings.postcode, settings.country]
       .filter(Boolean)
       .join(", ");
 
@@ -142,7 +142,7 @@ serve(async (req) => {
             <p style="font-size:15px;font-weight:700;color:#111827;margin:0 0 3px">${client?.company || client?.name || "Client"}</p>
             ${client?.company ? `<p style="font-size:13px;color:#6b7280;margin:0 0 2px">${client.name}</p>` : ""}
             <p style="font-size:13px;color:#6b7280;margin:0 0 2px">${client?.email || ""}</p>
-            ${client?.address ? `<p style="font-size:13px;color:#6b7280;margin:0">${client.address}${client.city ? ", " + client.city : ""}</p>` : ""}
+            ${client?.address ? `<p style="font-size:13px;color:#6b7280;margin:0">${[client.address, client.city, client.postcode, client.country].filter(Boolean).join(", ")}</p>` : ""}
           </td>
         </tr>
       </table>

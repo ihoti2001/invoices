@@ -11,12 +11,13 @@ interface ClientFormData {
   phone: string;
   address: string;
   city: string;
+  postcode: string;
   country: string;
   company: string;
 }
 
 const emptyForm: ClientFormData = {
-  name: "", email: "", phone: "", address: "", city: "", country: "USA", company: "",
+  name: "", email: "", phone: "", address: "", city: "", postcode: "", country: "United Kingdom", company: "",
 };
 
 interface ClientRowProps {
@@ -37,7 +38,7 @@ function ClientRow({ client, totalBilled, outstanding, invoiceCount, onEdit, onD
         {client.company && <div className="text-sm text-gray-500">{client.name}</div>}
       </td>
       <td className="px-6 py-4 text-sm text-gray-600">{client.email}</td>
-      <td className="px-6 py-4 text-sm text-gray-600">{client.city}, {client.country}</td>
+      <td className="px-6 py-4 text-sm text-gray-600">{[client.city, client.postcode, client.country].filter(Boolean).join(", ")}</td>
       <td className="px-6 py-4 text-sm text-gray-900">{invoiceCount} invoices</td>
       <td className="px-6 py-4 text-sm font-medium text-gray-900">{formatCurrency(totalBilled)}</td>
       <td className="px-6 py-4 text-sm text-amber-700">{outstanding > 0 ? formatCurrency(outstanding) : "—"}</td>
@@ -77,7 +78,7 @@ function ClientFormModal({ form, editing, onChange, onSubmit, onClose }: ClientF
         </div>
         <form onSubmit={onSubmit} className="p-6 space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            {(["name", "company", "email", "phone", "address", "city"] as (keyof ClientFormData)[]).map((field) => (
+            {(["name", "company", "email", "phone", "address", "city", "postcode"] as (keyof ClientFormData)[]).map((field) => (
               <div key={field} className={field === "address" ? "col-span-2" : ""}>
                 <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">{field}</label>
                 <input
@@ -115,7 +116,7 @@ export default function ClientList() {
 
   const openEdit = (client: Client) => {
     setEditingClient(client);
-    setForm({ name: client.name, email: client.email, phone: client.phone, address: client.address, city: client.city, country: client.country, company: client.company });
+    setForm({ name: client.name, email: client.email, phone: client.phone, address: client.address, city: client.city, postcode: client.postcode ?? "", country: client.country, company: client.company });
     setShowForm(true);
   };
 

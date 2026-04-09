@@ -8,6 +8,7 @@ interface BusinessSettings {
   phone: string;
   address: string;
   city: string;
+  postcode: string;
   country: string;
   website: string;
   taxId: string;
@@ -30,6 +31,7 @@ const defaultSettings: BusinessSettings = {
   phone: '+44 (0) 000 000 0000',
   address: '123 Business Street',
   city: 'London',
+  postcode: '',
   country: 'United Kingdom',
   website: 'www.bizflowpro.com',
   taxId: 'TAX-123456789',

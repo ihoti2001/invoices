@@ -36,6 +36,7 @@ function toClient(row: Record<string, unknown>): Client {
     phone: (row.phone as string) ?? "",
     address: (row.address as string) ?? "",
     city: (row.city as string) ?? "",
+    postcode: (row.postcode as string) ?? "",
     country: (row.country as string) ?? "",
     company: (row.company as string) ?? "",
     createdAt: row.created_at as string,
@@ -140,7 +141,7 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
   const addClient = async (client: Omit<Client, "id" | "createdAt">): Promise<Client> => {
     const { data, error } = await supabase
       .from("clients")
-      .insert({ user_id: userId, name: client.name, email: client.email, phone: client.phone, address: client.address, city: client.city, country: client.country, company: client.company })
+      .insert({ user_id: userId, name: client.name, email: client.email, phone: client.phone, address: client.address, city: client.city, country: client.country, postcode: client.postcode, company: client.company })
       .select()
       .single();
     if (error) {
@@ -171,6 +172,7 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
       ...(updates.address !== undefined && { address: updates.address }),
       ...(updates.city !== undefined && { city: updates.city }),
       ...(updates.country !== undefined && { country: updates.country }),
+      ...(updates.postcode !== undefined && { postcode: updates.postcode }),
       ...(updates.company !== undefined && { company: updates.company }),
     }).eq("id", id);
     if (error) {

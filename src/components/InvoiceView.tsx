@@ -154,7 +154,7 @@ export default function InvoiceView({ invoice, client, onClose, onSend, onMarkPa
                   <p className="text-gray-600">{client.email}</p>
                   <p className="text-gray-600">{client.phone}</p>
                   <p className="text-gray-600">{client.address}</p>
-                  <p className="text-gray-600">{client.city}, {client.country}</p>
+                  <p className="text-gray-600">{[client.city, client.postcode, client.country].filter(Boolean).join(', ')}</p>
                 </div>
               ) : (
                 <p className="text-gray-500 text-sm">Client not found</p>
