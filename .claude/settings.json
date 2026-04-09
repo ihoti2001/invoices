@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\": \"PROGRESS CONTEXT: Read docs/superpowers/progress.md for full implementation state. Phase 1 plan: docs/superpowers/plans/2026-04-09-phase1-refactor.md (15 tasks). Phase 2 plan: docs/superpowers/plans/2026-04-09-phase2-supabase.md (10 tasks). Design spec: docs/superpowers/specs/2026-04-09-invoices-app-refactor-supabase-design.md. Repo ID: local/invoices app-e64fdfe4. Architecture: AppContext replaces useStore, store-direct domain hooks, App.tsx layout-only. ALWAYS read progress.md first after compaction.\"}'"
+          }
+        ]
+      }
+    ]
+  }
+}
