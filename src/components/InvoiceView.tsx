@@ -8,7 +8,7 @@ interface InvoiceViewProps {
   invoice: Invoice;
   client: Client | undefined;
   onClose: () => void;
-  onSend: (id: string) => void;
+  onSend: (id: string, email: string) => Promise<void>;
   onMarkPaid: (id: string) => void;
 }
 
@@ -21,10 +21,9 @@ const statusColors: Record<string, string> = {
 };
 
 export default function InvoiceView({ invoice, client, onClose, onSend, onMarkPaid }: InvoiceViewProps) {
-  const [showSendModal, setShowSendModal] = useState(false);
-  const [sendEmail, setSendEmail] = useState(client?.email || '');
-  const [sendMessage, setSendMessage] = useState(`Dear ${client?.name || 'Client'},\n\nPlease find attached your invoice ${invoice.invoiceNumber} for $${invoice.total.toFixed(2)}.\n\nPayment is due by ${format(parseISO(invoice.dueDate), 'MMMM dd, yyyy')}.\n\nThank you for your business!\n\nBest regards,\nBizFlow Pro`);
-  const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState('');
+  const [sendSuccess, setSendSuccess] = useState(false);
   const [paymentSettings, setPaymentSettings] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -37,13 +36,19 @@ export default function InvoiceView({ invoice, client, onClose, onSend, onMarkPa
     load();
   }, []);
 
-  const handleSendInvoice = () => {
-    onSend(invoice.id);
-    setSent(true);
-    setTimeout(() => {
-      setShowSendModal(false);
-      setSent(false);
-    }, 2000);
+  const handleSend = async () => {
+    if (!client?.email) return;
+    setSendError('');
+    setSending(true);
+    try {
+      await onSend(invoice.id, client.email);
+      setSendSuccess(true);
+      setTimeout(() => setSendSuccess(false), 3000);
+    } catch (err) {
+      setSendError(err instanceof Error ? err.message : 'Failed to send invoice');
+    } finally {
+      setSending(false);
+    }
   };
 
   const handlePrint = () => {
@@ -66,12 +71,27 @@ export default function InvoiceView({ invoice, client, onClose, onSend, onMarkPa
             </div>
             <div className="flex items-center gap-2">
               {(invoice.status === 'draft' || invoice.status === 'sent' || invoice.status === 'overdue') && (
-                <button
-                  onClick={() => setShowSendModal(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
-                >
-                  <Send className="w-4 h-4" /> Send to Client
-                </button>
+                <div className="flex flex-col items-end gap-1">
+                  <button
+                    onClick={handleSend}
+                    disabled={sending || !client?.email}
+                    title={!client?.email ? 'No email on file for this client' : undefined}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+                  >
+                    {sending ? (
+                      <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                      </svg>
+                    ) : (
+                      <Send className="w-4 h-4" />
+                    )}
+                    {sending ? 'Sending\u2026' : sendSuccess ? 'Sent \u2713' : 'Send to Client'}
+                  </button>
+                  {sendError && (
+                    <p className="text-xs text-red-600 max-w-xs text-right">{sendError}</p>
+                  )}
+                </div>
               )}
               {invoice.status !== 'paid' && invoice.status !== 'draft' && (
                 <button
@@ -211,78 +231,6 @@ export default function InvoiceView({ invoice, client, onClose, onSend, onMarkPa
           </div>
         </div>
       </div>
-
-      {/* Send Invoice Modal */}
-      {showSendModal && (
-        <div className="fixed inset-0 bg-black/60 z-60 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <h3 className="text-base font-bold text-gray-800">Send Invoice to Client</h3>
-              <button onClick={() => setShowSendModal(false)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="p-6 space-y-4">
-              {sent ? (
-                <div className="text-center py-8">
-                  <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
-                    <CheckCircle className="w-8 h-8 text-green-600" />
-                  </div>
-                  <p className="font-semibold text-gray-800">Invoice Sent!</p>
-                  <p className="text-sm text-gray-500 mt-1">Sent to {sendEmail}</p>
-                </div>
-              ) : (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
-                    <input
-                      type="email"
-                      value={sendEmail}
-                      onChange={e => setSendEmail(e.target.value)}
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="client@email.com"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                    <input
-                      type="text"
-                      defaultValue={`Invoice ${invoice.invoiceNumber} from BizFlow Pro`}
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                    <textarea
-                      value={sendMessage}
-                      onChange={e => setSendMessage(e.target.value)}
-                      rows={6}
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                    />
-                  </div>
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <p className="text-xs text-blue-700">📎 Invoice {invoice.invoiceNumber} — ${invoice.total.toFixed(2)} will be attached as a PDF</p>
-                  </div>
-                  <div className="flex justify-end gap-3">
-                    <button
-                      onClick={() => setShowSendModal(false)}
-                      className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleSendInvoice}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
-                    >
-                      <Send className="w-4 h-4" /> Send Invoice
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
