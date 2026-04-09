@@ -1,6 +1,7 @@
+// src/store/useClients.ts
 import { useAppContext } from "./AppContext";
 
 export function useClients() {
-  const { clients, addClient, updateClient, deleteClient } = useAppContext();
-  return { clients, addClient, updateClient, deleteClient };
+  const { loading, clients, addClient, updateClient, deleteClient } = useAppContext();
+  return { loading, clients, addClient, updateClient, deleteClient };
 }

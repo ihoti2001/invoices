@@ -1,6 +1,7 @@
+// src/store/useActivity.ts
 import { useAppContext } from "./AppContext";
 
 export function useActivity() {
-  const { activityLog } = useAppContext();
-  return { activityLog };
+  const { loading, activityLog } = useAppContext();
+  return { loading, activityLog };
 }
