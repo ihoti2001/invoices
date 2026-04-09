@@ -148,7 +148,6 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
       if (res) {
         try {
           const text = await res.text();
-          console.error('Edge Function error body:', text);
           let msg: string = text;
           try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
           throw new Error(msg || error.message);
@@ -179,7 +178,6 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
       if (res) {
         try {
           const text = await res.text();
-          console.error('Edge Function error body:', text);
           let msg: string = text;
           try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
           throw new Error(msg || error.message);
@@ -201,7 +199,6 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
       if (res) {
         try {
           const text = await res.text();
-          console.error('Edge Function error body:', text);
           let msg: string = text;
           try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
           throw new Error(msg || error.message);
@@ -283,7 +280,6 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
       if (res) {
         try {
           const text = await res.text();
-          console.error('Edge Function error body:', text);
           let msg: string = text;
           try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
           throw new Error(msg || error.message);
@@ -311,7 +307,6 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
       if (res) {
         try {
           const text = await res.text();
-          console.error('Edge Function error body:', text);
           let msg: string = text;
           try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
           throw new Error(msg || error.message);
@@ -338,7 +333,6 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
       if (res) {
         try {
           const text = await res.text();
-          console.error('Edge Function error body:', text);
           let msg: string = text;
           try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
           throw new Error(msg || error.message);
@@ -380,7 +374,6 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
       if (res) {
         try {
           const text = await res.text();
-          console.error('Edge Function error body:', text);
           let msg: string = text;
           try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
           throw new Error(msg || error.message);
@@ -412,7 +405,6 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
       if (res) {
         try {
           const text = await res.text();
-          console.error('Edge Function error body:', text);
           let msg: string = text;
           try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
           throw new Error(msg || error.message);
@@ -433,7 +425,6 @@ export function AppProvider({ userId, children }: { userId: string; children: Re
       if (res) {
         try {
           const text = await res.text();
-          console.error('Edge Function error body:', text);
           let msg: string = text;
           try { msg = (JSON.parse(text) as { error?: string }).error ?? text; } catch { /* not json */ }
           throw new Error(msg || error.message);
