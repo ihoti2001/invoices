@@ -156,7 +156,7 @@ export default function Reports() {
             <Download className="w-4 h-4" />
             Download CSV
           </button>
-          <span className="text-xs text-gray-400">Exports all invoices and bills within the selected date range</span>
+          <span className="text-xs text-gray-400">Exports all invoices and expenditure within the selected date range</span>
         </div>
       </div>
 
@@ -190,7 +190,7 @@ export default function Reports() {
             </div>
           </div>
           <div className="text-2xl font-bold text-red-600">{formatCurrency(totalExpenses)}</div>
-          <div className="text-xs text-gray-500 mt-1">{bills.length} bills</div>
+          <div className="text-xs text-gray-500 mt-1">{bills.length} expenditure items</div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center justify-between mb-3">

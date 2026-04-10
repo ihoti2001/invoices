@@ -24,7 +24,7 @@ export default function AddNewMenu({ onNewInvoice, onNewClient, onNewBill }: Add
   const items = [
     { label: 'New Invoice', icon: FileText, action: onNewInvoice },
     { label: 'New Client', icon: Users, action: onNewClient },
-    { label: 'New Bill', icon: Receipt, action: onNewBill },
+    { label: 'New Expenditure', icon: Receipt, action: onNewBill },
   ];
 
   return (

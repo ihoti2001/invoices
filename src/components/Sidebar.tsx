@@ -20,7 +20,7 @@ const navItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'reports',   label: 'Reports',   icon: BarChart3 },
   { id: 'invoices',  label: 'Invoices',  icon: FileText },
-  { id: 'bills',     label: 'Bills',     icon: Receipt },
+  { id: 'bills',     label: 'Expenditure', icon: Receipt },
   { id: 'clients',   label: 'Clients',   icon: Users },
   { id: 'settings',  label: 'Settings',  icon: Settings },
 ] as const;
