@@ -1,6 +1,7 @@
 import { StrictMode, useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import type { Session } from "@supabase/supabase-js";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { supabase } from "./lib/supabase";
 import { AppProvider } from "./store/AppContext";
 import App from "./App";
@@ -36,5 +37,6 @@ function Root() {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Root />
+    <SpeedInsights />
   </StrictMode>
 );
