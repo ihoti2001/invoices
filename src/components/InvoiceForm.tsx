@@ -2,6 +2,8 @@ import { useState } from "react";
 import { X, Plus, Trash2 } from "lucide-react";
 import { useInvoices } from "@/store/useInvoices";
 import { useClients } from "@/store/useClients";
+import { useSettings } from "@/store/useSettings";
+import { formatCurrency } from "@/utils/format";
 import { LineItem, Invoice } from "@/types";
 
 interface InvoiceFormProps {
@@ -18,6 +20,7 @@ function calcTotals(lineItems: LineItem[], taxRate: number) {
 export default function InvoiceForm({ invoiceId, onClose }: InvoiceFormProps) {
   const { invoices, addInvoice, updateInvoice, getNextInvoiceNumber } = useInvoices();
   const { clients } = useClients();
+  const { currency } = useSettings();
 
   const invoice = invoiceId ? invoices.find((i) => i.id === invoiceId) : undefined;
 
@@ -116,7 +119,7 @@ export default function InvoiceForm({ invoiceId, onClose }: InvoiceFormProps) {
                   <input placeholder="Description" value={li.description} onChange={(e) => updateLineItem(li.id, "description", e.target.value)} className="col-span-5 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]" />
                   <input type="number" placeholder="Qty" value={li.quantity} onChange={(e) => updateLineItem(li.id, "quantity", Number(e.target.value))} className="col-span-2 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]" />
                   <input type="number" placeholder="Rate" value={li.rate} onChange={(e) => updateLineItem(li.id, "rate", Number(e.target.value))} className="col-span-2 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]" />
-                  <div className="col-span-2 text-sm text-gray-700 text-right">${li.amount.toFixed(2)}</div>
+                  <div className="col-span-2 text-sm text-gray-700 text-right">{formatCurrency(li.amount, currency)}</div>
                   <button type="button" onClick={() => removeLineItem(li.id)} className="col-span-1 text-gray-400 hover:text-red-500 flex justify-center">
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -127,7 +130,7 @@ export default function InvoiceForm({ invoiceId, onClose }: InvoiceFormProps) {
 
           <div className="flex justify-end">
             <div className="w-48 space-y-1 text-sm">
-              <div className="flex justify-between text-gray-600"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
+              <div className="flex justify-between text-gray-600"><span>Subtotal</span><span>{formatCurrency(subtotal, currency)}</span></div>
               <div className="flex justify-between items-center text-gray-600">
                 <span>Tax</span>
                 <div className="flex items-center gap-1">
@@ -135,7 +138,7 @@ export default function InvoiceForm({ invoiceId, onClose }: InvoiceFormProps) {
                   <span className="text-xs">%</span>
                 </div>
               </div>
-              <div className="flex justify-between font-bold text-gray-900 border-t pt-1"><span>Total</span><span>${total.toFixed(2)}</span></div>
+              <div className="flex justify-between font-bold text-gray-900 border-t pt-1"><span>Total</span><span>{formatCurrency(total, currency)}</span></div>
             </div>
           </div>
 
