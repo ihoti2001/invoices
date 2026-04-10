@@ -3,7 +3,7 @@ import { Plus, Eye, Edit, Trash2, Send, CheckCircle } from "lucide-react";
 import { useInvoices } from "@/store/useInvoices";
 import { useClients } from "@/store/useClients";
 import { formatCurrency } from "@/utils/format";
-import { Invoice, Client } from "@/types";
+import { Invoice, Client, InvoiceStatus } from "@/types";
 
 const statusColors: Record<string, string> = {
   draft: "bg-gray-100 text-gray-600",
@@ -12,6 +12,8 @@ const statusColors: Record<string, string> = {
   overdue: "bg-red-100 text-red-700",
   cancelled: "bg-red-50 text-red-400",
 };
+
+const ALL_STATUSES: InvoiceStatus[] = ["draft", "sent", "paid", "overdue", "cancelled"];
 
 interface InvoiceListProps {
   onAdd: () => void;
@@ -27,10 +29,11 @@ interface InvoiceRowProps {
   onSend: (id: string, email: string) => Promise<void>;
   onMarkPaid: (id: string) => void;
   onDelete: (id: string) => void;
+  onStatusChange: (id: string, status: InvoiceStatus) => void;
   confirmDelete: string | null;
 }
 
-function InvoiceRow({ invoice, client, onEdit, onView, onSend, onMarkPaid, onDelete, confirmDelete }: InvoiceRowProps) {
+function InvoiceRow({ invoice, client, onEdit, onView, onSend, onMarkPaid, onDelete, onStatusChange, confirmDelete }: InvoiceRowProps) {
   return (
     <tr className="hover:bg-gray-50">
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -46,9 +49,15 @@ function InvoiceRow({ invoice, client, onEdit, onView, onSend, onMarkPaid, onDel
         {formatCurrency(invoice.total)}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusColors[invoice.status] || "bg-gray-100 text-gray-600"}`}>
-          {invoice.status}
-        </span>
+        <select
+          value={invoice.status}
+          onChange={(e) => onStatusChange(invoice.id, e.target.value as InvoiceStatus)}
+          className={`text-xs font-medium rounded-full px-2 py-1 border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)] ${statusColors[invoice.status] || "bg-gray-100 text-gray-600"}`}
+        >
+          {ALL_STATUSES.map((s) => (
+            <option key={s} value={s} className="bg-white text-gray-900">{s}</option>
+          ))}
+        </select>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
         <div className="flex items-center justify-end gap-1">
@@ -84,7 +93,7 @@ function InvoiceRow({ invoice, client, onEdit, onView, onSend, onMarkPaid, onDel
 }
 
 export default function InvoiceList({ onAdd, onEdit, onView }: InvoiceListProps) {
-  const { invoices, sendInvoice, markInvoicePaid, deleteInvoice } = useInvoices();
+  const { invoices, updateInvoice, sendInvoice, markInvoicePaid, deleteInvoice } = useInvoices();
   const { clients } = useClients();
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("all");
@@ -154,6 +163,7 @@ export default function InvoiceList({ onAdd, onEdit, onView }: InvoiceListProps)
                   onSend={sendInvoice}
                   onMarkPaid={markInvoicePaid}
                   onDelete={handleDelete}
+                  onStatusChange={(id, status) => updateInvoice(id, { status })}
                   confirmDelete={confirmDelete}
                 />
               ))
