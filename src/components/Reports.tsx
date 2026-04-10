@@ -1,14 +1,15 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from 'recharts';
 import { format, parseISO } from 'date-fns';
-import { TrendingUp, TrendingDown, DollarSign, FileText } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, FileText, Download } from 'lucide-react';
 import { useInvoices } from "@/store/useInvoices";
 import { useBills } from "@/store/useBills";
 import { useClients } from "@/store/useClients";
 import { useActivity } from "@/store/useActivity";
+import { useSettings } from "@/store/useSettings";
 import { formatCurrency } from "@/utils/format";
 
 const MONTHS = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06'];
@@ -17,11 +18,72 @@ const MONTH_LABELS: Record<string, string> = {
   '2026-04': 'Apr', '2026-05': 'May', '2026-06': 'Jun',
 };
 
+function escapeCsv(value: string | number): string {
+  const str = String(value);
+  return str.includes(',') || str.includes('"') || str.includes('\n')
+    ? `"${str.replace(/"/g, '""')}"`
+    : str;
+}
+
 export default function Reports() {
   const { invoices } = useInvoices();
   const { bills } = useBills();
   const { clients } = useClients();
   const { activityLog } = useActivity();
+  const { currency } = useSettings();
+
+  const today = new Date().toISOString().slice(0, 10);
+  const firstOfYear = `${new Date().getFullYear()}-01-01`;
+  const [dateFrom, setDateFrom] = useState(firstOfYear);
+  const [dateTo, setDateTo] = useState(today);
+
+  const handleDownloadCsv = () => {
+    const from = dateFrom || '0000-01-01';
+    const to = dateTo || '9999-12-31';
+
+    const incomeRows = invoices
+      .filter(inv => inv.issueDate >= from && inv.issueDate <= to)
+      .map(inv => {
+        const client = clients.find(c => c.id === inv.clientId);
+        return {
+          date: inv.issueDate,
+          type: 'Income',
+          reference: inv.invoiceNumber,
+          party: client?.company || client?.name || '—',
+          description: inv.lineItems.map(li => li.description).filter(Boolean).join('; ') || '—',
+          status: inv.status,
+          amount: inv.total,
+        };
+      });
+
+    const expenseRows = bills
+      .filter(bill => bill.issueDate >= from && bill.issueDate <= to)
+      .map(bill => ({
+        date: bill.issueDate,
+        type: 'Expense',
+        reference: bill.billNumber,
+        party: bill.vendor,
+        description: bill.description || bill.category || '—',
+        status: bill.status,
+        amount: bill.amount,
+      }));
+
+    const rows = [...incomeRows, ...expenseRows].sort((a, b) => a.date.localeCompare(b.date));
+
+    const header = ['Date', 'Type', 'Reference', 'Party', 'Description', 'Status', `Amount (${currency})`];
+    const lines = [
+      header.map(escapeCsv).join(','),
+      ...rows.map(r => [r.date, r.type, r.reference, r.party, r.description, r.status, r.amount.toFixed(2)].map(escapeCsv).join(',')),
+    ];
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `report_${from}_to_${to}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
   const monthlyData = useMemo(() => {
     return MONTHS.map(month => {
       const invoiced = invoices.filter(i => i.issueDate.startsWith(month)).reduce((s, i) => s + i.total, 0);
@@ -64,6 +126,39 @@ export default function Reports() {
   return (
     <div className="p-6 space-y-5">
       <h1 className="text-2xl font-bold text-gray-800">Reports</h1>
+
+      {/* CSV Export */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700 whitespace-nowrap">From</label>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={e => setDateFrom(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700 whitespace-nowrap">To</label>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={e => setDateTo(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[oklch(42%_0.11_200)]"
+            />
+          </div>
+          <button
+            onClick={handleDownloadCsv}
+            disabled={!dateFrom || !dateTo}
+            className="flex items-center gap-2 px-4 py-1.5 bg-[oklch(42%_0.11_200)] hover:bg-[oklch(36%_0.11_200)] disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+          >
+            <Download className="w-4 h-4" />
+            Download CSV
+          </button>
+          <span className="text-xs text-gray-400">Exports all invoices and bills within the selected date range</span>
+        </div>
+      </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-4 gap-4">
