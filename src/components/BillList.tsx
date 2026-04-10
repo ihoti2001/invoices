@@ -180,7 +180,7 @@ export default function BillList() {
               </tr>
             ) : filtered.map(bill => (
               <tr key={bill.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-5 py-3.5 font-medium text-blue-600">{bill.billNumber}</td>
+                <td className="px-5 py-3.5 font-medium text-[oklch(42%_0.11_200)]">{bill.billNumber}</td>
                 <td className="px-5 py-3.5">
                   <div className="font-medium text-gray-800">{bill.vendor}</div>
                   {bill.description && <div className="text-xs text-gray-400 truncate max-w-32">{bill.description}</div>}

@@ -61,7 +61,7 @@ function InvoiceRow({ invoice, client, onEdit, onView, onSend, onMarkPaid, onDel
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
         <div className="flex items-center justify-end gap-1">
-          <button onClick={() => onView(invoice.id)} className="p-1 text-gray-400 hover:text-blue-600 rounded" title="View">
+          <button onClick={() => onView(invoice.id)} className="p-1 text-gray-400 hover:text-[oklch(42%_0.11_200)] rounded" title="View">
             <Eye className="w-4 h-4" />
           </button>
           {invoice.status === "draft" && (
@@ -70,7 +70,7 @@ function InvoiceRow({ invoice, client, onEdit, onView, onSend, onMarkPaid, onDel
             </button>
           )}
           {(invoice.status === "draft" || invoice.status === "sent") && (
-            <button onClick={() => onSend(invoice.id, client?.email ?? '')} className="p-1 text-gray-400 hover:text-blue-600 rounded" title="Send">
+            <button onClick={() => onSend(invoice.id, client?.email ?? '')} className="p-1 text-gray-400 hover:text-[oklch(42%_0.11_200)] rounded" title="Send">
               <Send className="w-4 h-4" />
             </button>
           )}

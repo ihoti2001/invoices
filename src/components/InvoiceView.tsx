@@ -3,6 +3,7 @@ import { format, parseISO } from 'date-fns';
 import { X, Send, CheckCircle, Printer } from 'lucide-react';
 import { Invoice, Client } from '../types';
 import { supabase } from "@/lib/supabase";
+import { formatCurrency } from "@/utils/format";
 
 interface InvoiceViewProps {
   invoice: Invoice;
@@ -24,14 +25,14 @@ export default function InvoiceView({ invoice, client, onClose, onSend, onMarkPa
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState('');
   const [sendSuccess, setSendSuccess] = useState(false);
-  const [paymentSettings, setPaymentSettings] = useState<Record<string, string>>({});
+  const [settings, setSettings] = useState<Record<string, string>>({});
 
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const { data } = await supabase.from("settings").select("data").eq("user_id", user.id).single();
-      if (data?.data) setPaymentSettings(data.data);
+      if (data?.data) setSettings(data.data);
     }
     load();
   }, []);
@@ -51,11 +52,22 @@ export default function InvoiceView({ invoice, client, onClose, onSend, onMarkPa
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const currency = settings.currency || 'GBP';
+  const businessName = settings.businessName || 'My Business';
+  const businessEmail = settings.email || '';
+  const businessPhone = settings.phone || '';
+  const businessAddress = settings.address || '';
+  const businessCity = settings.city || '';
+  const businessPostcode = settings.postcode || '';
+  const businessCountry = settings.country || '';
+  const hasPaymentDetails = settings.bankName || settings.accountNumber || settings.sortCode;
 
-  const hasPaymentDetails = paymentSettings.bankName || paymentSettings.accountNumber || paymentSettings.sortCode;
+  const initials = businessName
+    .split(' ')
+    .slice(0, 2)
+    .map((w: string) => w[0])
+    .join('')
+    .toUpperCase();
 
   return (
     <>
@@ -76,7 +88,7 @@ export default function InvoiceView({ invoice, client, onClose, onSend, onMarkPa
                     onClick={handleSend}
                     disabled={sending || !client?.email}
                     title={!client?.email ? 'No email on file for this client' : undefined}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[oklch(42%_0.11_200)] hover:bg-[oklch(36%_0.11_200)] disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
                   >
                     {sending ? (
                       <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
@@ -86,7 +98,7 @@ export default function InvoiceView({ invoice, client, onClose, onSend, onMarkPa
                     ) : (
                       <Send className="w-4 h-4" />
                     )}
-                    {sending ? 'Sending\u2026' : sendSuccess ? 'Sent \u2713' : 'Send to Client'}
+                    {sending ? 'Sending…' : sendSuccess ? 'Sent ✓' : 'Send to Client'}
                   </button>
                   {sendError && (
                     <p className="text-xs text-red-600 max-w-xs text-right">{sendError}</p>
@@ -116,21 +128,25 @@ export default function InvoiceView({ invoice, client, onClose, onSend, onMarkPa
             <div className="flex justify-between mb-10">
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm">BZ</div>
+                  <div className="w-10 h-10 rounded-lg bg-[oklch(42%_0.11_200)] flex items-center justify-center text-white font-bold text-sm">
+                    {initials}
+                  </div>
                   <div>
-                    <div className="font-bold text-gray-900 text-lg">BizFlow Pro</div>
-                    <div className="text-xs text-gray-500">billing@bizflowpro.com</div>
+                    <div className="font-bold text-gray-900 text-lg">{businessName}</div>
+                    {businessEmail && <div className="text-xs text-gray-500">{businessEmail}</div>}
                   </div>
                 </div>
-                <div className="text-sm text-gray-500">
-                  <p>123 Business Street</p>
-                  <p>New York, NY 10001</p>
-                  <p>+1 (555) 000-0000</p>
+                <div className="text-sm text-gray-500 space-y-0.5">
+                  {businessAddress && <p>{businessAddress}</p>}
+                  {(businessCity || businessPostcode || businessCountry) && (
+                    <p>{[businessCity, businessPostcode, businessCountry].filter(Boolean).join(', ')}</p>
+                  )}
+                  {businessPhone && <p>{businessPhone}</p>}
                 </div>
               </div>
               <div className="text-right">
                 <div className="text-3xl font-bold text-gray-900 mb-1">INVOICE</div>
-                <div className="text-lg font-semibold text-blue-600 mb-3">{invoice.invoiceNumber}</div>
+                <div className="text-lg font-semibold text-[oklch(42%_0.11_200)] mb-3">{invoice.invoiceNumber}</div>
                 <div className="text-sm text-gray-600 space-y-1">
                   <div className="flex justify-end gap-4">
                     <span className="text-gray-500">Issue Date:</span>
@@ -176,8 +192,8 @@ export default function InvoiceView({ invoice, client, onClose, onSend, onMarkPa
                   <tr key={li.id}>
                     <td className="py-3 text-gray-700">{li.description}</td>
                     <td className="py-3 text-center text-gray-600">{li.quantity}</td>
-                    <td className="py-3 text-right text-gray-600">${li.rate.toFixed(2)}</td>
-                    <td className="py-3 text-right font-medium text-gray-800">${li.amount.toFixed(2)}</td>
+                    <td className="py-3 text-right text-gray-600">{formatCurrency(li.rate, currency)}</td>
+                    <td className="py-3 text-right font-medium text-gray-800">{formatCurrency(li.amount, currency)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -188,15 +204,15 @@ export default function InvoiceView({ invoice, client, onClose, onSend, onMarkPa
               <div className="w-56 space-y-2">
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Subtotal</span>
-                  <span>${invoice.subtotal.toFixed(2)}</span>
+                  <span>{formatCurrency(invoice.subtotal, currency)}</span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Tax ({invoice.taxRate}%)</span>
-                  <span>${invoice.taxAmount.toFixed(2)}</span>
+                  <span>{formatCurrency(invoice.taxAmount, currency)}</span>
                 </div>
                 <div className="flex justify-between font-bold text-base text-gray-900 border-t border-gray-200 pt-2">
                   <span>Total</span>
-                  <span>${invoice.total.toFixed(2)}</span>
+                  <span>{formatCurrency(invoice.total, currency)}</span>
                 </div>
                 {invoice.status === 'paid' && invoice.paidAt && (
                   <div className="flex justify-between text-sm text-green-600 font-medium">
@@ -220,11 +236,11 @@ export default function InvoiceView({ invoice, client, onClose, onSend, onMarkPa
               <div className="mt-8 pt-6 border-t border-gray-100">
                 <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Payment Details</div>
                 <div className="text-sm text-gray-600 space-y-1">
-                  {paymentSettings.bankName && <p><span className="font-medium">Bank:</span> {paymentSettings.bankName}</p>}
-                  {paymentSettings.accountName && <p><span className="font-medium">Account Name:</span> {paymentSettings.accountName}</p>}
-                  {paymentSettings.accountNumber && <p><span className="font-medium">Account Number:</span> {paymentSettings.accountNumber}</p>}
-                  {paymentSettings.sortCode && <p><span className="font-medium">Sort Code:</span> {paymentSettings.sortCode}</p>}
-                  {paymentSettings.iban && <p><span className="font-medium">IBAN:</span> {paymentSettings.iban}</p>}
+                  {settings.bankName && <p><span className="font-medium">Bank:</span> {settings.bankName}</p>}
+                  {settings.accountName && <p><span className="font-medium">Account Name:</span> {settings.accountName}</p>}
+                  {settings.accountNumber && <p><span className="font-medium">Account Number:</span> {settings.accountNumber}</p>}
+                  {settings.sortCode && <p><span className="font-medium">Sort Code:</span> {settings.sortCode}</p>}
+                  {settings.iban && <p><span className="font-medium">IBAN:</span> {settings.iban}</p>}
                 </div>
               </div>
             )}
@@ -233,4 +249,8 @@ export default function InvoiceView({ invoice, client, onClose, onSend, onMarkPa
       </div>
     </>
   );
+}
+
+function handlePrint() {
+  window.print();
 }

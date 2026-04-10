@@ -70,8 +70,8 @@ export default function Reports() {
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Invoiced</div>
-            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-              <FileText className="w-4 h-4 text-blue-600" />
+            <div className="w-8 h-8 bg-[oklch(92%_0.04_200)] rounded-lg flex items-center justify-center">
+              <FileText className="w-4 h-4 text-[oklch(42%_0.11_200)]" />
             </div>
           </div>
           <div className="text-2xl font-bold text-gray-900">{formatCurrency(totalInvoiced)}</div>

@@ -31,7 +31,7 @@ export default function AddNewMenu({ onNewInvoice, onNewClient, onNewBill }: Add
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors shadow"
+        className="flex items-center gap-2 bg-[oklch(42%_0.11_200)] hover:bg-[oklch(36%_0.11_200)] text-white px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors shadow"
       >
         <Plus className="w-4 h-4" />
         Add New
